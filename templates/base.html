@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<!--
+  ============================================================
+  GLOBETROTTER — BASE.HTML
+  ============================================================
+  This is the master layout every other page in this project
+  "extends". Plain HTML has no real template inheritance, so
+  each page below copies this exact shell — same <head>, same
+  .navbar, same .site-footer, same css/style.css + js/app.js —
+  and only replaces the content inside <main class="container">.
+
+  Sections marked below are the contract every page follows:
+
+    1. <head>      — fonts + css/style.css (identical everywhere)
+    2. .navbar     — global nav, identical on every logged-in page
+    3. main         — PAGE-SPECIFIC CONTENT GOES HERE
+    4. .site-footer — identical on every page
+    5. js/app.js    — identical on every page
+
+  This file also doubles as a small component reference (buttons,
+  cards, tags, stamps) so any new page can be built from parts
+  already defined in css/style.css instead of inventing new ones.
+  ============================================================
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Base Layout · GlobeTrotter</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="app-bg">
+
+  <!-- ============ 2. GLOBAL NAVBAR (copy verbatim into every logged-in page) ============ -->
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a href="dashboard.html" class="brand">
+        <svg class="compass" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="17" cy="17" r="15.25" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M22.5 11.5L15.5 15L12 22.5L19 19L22.5 11.5Z" fill="currentColor"/>
+          <circle cx="17" cy="17" r="1.6" fill="var(--sand)"/>
+        </svg>
+        GlobeTrotter
+      </a>
+
+      <div class="nav-links">
+        <a href="dashboard.html">Dashboard</a>
+        <a href="my-trips.html">My Trips</a>
+        <a href="search.html">Explore</a>
+        <a href="community.html">Community</a>
+        <a href="calendar.html">Calendar</a>
+      </div>
+
+      <div class="nav-actions">
+        <a href="create-trip.html" class="btn btn-primary btn-sm">+ Plan a trip</a>
+        <a href="profile.html" class="nav-avatar">A</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ============ 3. PAGE CONTENT — replace everything inside <main> ============ -->
+  <main class="container">
+
+    <div class="page-head">
+      <div class="eyebrow">Base template</div>
+      <h1>This is the shell every screen is built on</h1>
+      <p class="small">Swap this block for the real page content. Keep the navbar above and footer below unchanged so every screen in the app feels like one product.</p>
+    </div>
+
+    <div class="section-head">
+      <h2>Component reference</h2>
+      <span class="see-all small">used across all pages</span>
+    </div>
+
+    <div class="grid grid-3">
+      <div class="card card-pad">
+        <div class="stamp stamp-teal">Buttons</div>
+        <div class="mt-16 flex gap-12" style="flex-wrap:wrap;">
+          <button class="btn btn-primary">Primary</button>
+          <button class="btn btn-navy">Navy</button>
+          <button class="btn btn-outline">Outline</button>
+        </div>
+      </div>
+      <div class="card card-pad">
+        <div class="stamp stamp-coral">Tags</div>
+        <div class="mt-16 flex gap-12" style="flex-wrap:wrap;">
+          <span class="tag is-active">Adventure</span>
+          <span class="tag">Food &amp; Drink</span>
+          <span class="tag">Culture</span>
+        </div>
+      </div>
+      <div class="card card-pad">
+        <div class="stamp stamp-gold">Budget bar</div>
+        <div class="mt-16">
+          <div class="budget-bar"><span style="width:64%"></span></div>
+          <p class="small mt-8 mb-0">64% of budget used</p>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ============ 4. GLOBAL FOOTER (copy verbatim into every page) ============ -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="brand" style="font-size:1rem;">
+        <svg class="compass" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:22px;height:22px;">
+          <circle cx="17" cy="17" r="15.25" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M22.5 11.5L15.5 15L12 22.5L19 19L22.5 11.5Z" fill="currentColor"/>
+        </svg>
+        GlobeTrotter
+      </div>
+      <ul class="footer-links">
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="community.html">Community</a></li>
+        <li><a href="profile.html">Settings</a></li>
+      </ul>
+      <div class="small text-muted">&copy; 2026 GlobeTrotter — plan it, map it, live it.</div>
+    </div>
+  </footer>
+
+  <!-- ============ 5. SHARED JS ============ -->
+  <script src="js/app.js"></script>
+</body>
+</html>
