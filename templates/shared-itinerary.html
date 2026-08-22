@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Maya's Japan Adventure &middot; Shared on GlobeTrotter</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="app-bg">
+
+  <!-- Minimal public header — no account nav, this page is read-only -->
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a href="dashboard.html" class="brand">
+        <svg class="compass" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="17" cy="17" r="15.25" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M22.5 11.5L15.5 15L12 22.5L19 19L22.5 11.5Z" fill="currentColor"/>
+          <circle cx="17" cy="17" r="1.6" fill="var(--sand)"/>
+        </svg>
+        GlobeTrotter
+      </a>
+      <div class="nav-links"></div>
+      <div class="nav-actions">
+        <span class="tag">Public itinerary</span>
+        <a href="index.html" class="btn btn-outline btn-sm">Log in</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container">
+
+    <div class="page-head">
+      <div class="eyebrow">Screen 11 &middot; Shared / public itinerary</div>
+    </div>
+
+    <section class="banner">
+      <svg class="compass-mark" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="17" cy="17" r="15.25" stroke="var(--paper)" stroke-width="1"/>
+        <path d="M22.5 11.5L15.5 15L12 22.5L19 19L22.5 11.5Z" fill="var(--paper)"/>
+      </svg>
+      <div class="eyebrow" style="color:var(--gold);">Shared by Maya Rao</div>
+      <h1>Japan Adventure</h1>
+      <p>Jan 16 &ndash; Jan 28 &middot; Tokyo &rarr; Kyoto &rarr; Osaka &rarr; Hakone &middot; 12 days, 4 cities</p>
+      <div class="flex gap-12 mt-24" style="flex-wrap:wrap;">
+        <a href="index.html" class="btn btn-primary">Copy this trip</a>
+        <button class="btn btn-outline" style="border-color:rgba(251,247,239,.5);color:var(--paper);">Share</button>
+      </div>
+    </section>
+
+    <div class="grid" style="grid-template-columns:1.3fr .7fr;gap:32px;align-items:start;margin-top:32px;margin-bottom:56px;">
+
+      <div>
+        <div class="tag is-active" style="display:inline-flex;margin-bottom:18px;">Day 1 &middot; Tokyo</div>
+        <div class="flight-path">
+          <div class="flight-node">
+            <div class="card card-pad">
+              <h3 style="font-size:1rem;">Arrive Tokyo Narita</h3>
+              <p class="small mb-0">Airport transfer to Shinjuku hotel</p>
+            </div>
+          </div>
+          <div class="flight-node">
+            <div class="card card-pad">
+              <h3 style="font-size:1rem;">Shibuya Crossing &amp; Sky Deck</h3>
+              <p class="small mb-0">Sightseeing</p>
+            </div>
+          </div>
+          <div class="flight-node is-end">
+            <div class="card card-pad">
+              <h3 style="font-size:1rem;">Ramen dinner in Golden Gai</h3>
+              <p class="small mb-0">Food &amp; drink</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="tag is-active mt-24" style="display:inline-flex;margin-bottom:18px;">Day 5 &middot; Kyoto</div>
+        <div class="flight-path">
+          <div class="flight-node">
+            <div class="card card-pad">
+              <h3 style="font-size:1rem;">Fushimi Inari Shrine at sunrise</h3>
+              <p class="small mb-0">Culture</p>
+            </div>
+          </div>
+          <div class="flight-node is-end">
+            <div class="card card-pad">
+              <h3 style="font-size:1rem;">Ryokan check-in &amp; kaiseki dinner</h3>
+              <p class="small mb-0">Stay &amp; food</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="card card-pad">
+        <div class="eyebrow">Trip summary</div>
+        <h2 style="font-size:1.4rem;">$4,100 total</h2>
+        <p class="small">$342 average per day &middot; mid-range budget</p>
+        <div class="mt-16 flex" style="flex-wrap:wrap;gap:8px;">
+          <span class="tag">Culture</span>
+          <span class="tag">Food &amp; Drink</span>
+          <span class="tag">Nature</span>
+        </div>
+        <div class="mt-24" style="border-top:1px dashed var(--line);padding-top:16px;">
+          <p class="small mb-0">Like this itinerary? Create a free account to copy it and make it your own.</p>
+          <a href="register.html" class="btn btn-primary btn-block mt-16">Create free account</a>
+        </div>
+      </aside>
+
+    </div>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="brand" style="font-size:1rem;">
+        <svg class="compass" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:22px;height:22px;">
+          <circle cx="17" cy="17" r="15.25" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M22.5 11.5L15.5 15L12 22.5L19 19L22.5 11.5Z" fill="currentColor"/>
+        </svg>
+        GlobeTrotter
+      </div>
+      <ul class="footer-links">
+        <li><a href="index.html">Log in</a></li>
+        <li><a href="register.html">Sign up</a></li>
+      </ul>
+      <div class="small text-muted">&copy; 2026 GlobeTrotter &mdash; plan it, map it, live it.</div>
+    </div>
+  </footer>
+
+</body>
+</html>

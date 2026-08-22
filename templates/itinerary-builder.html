@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Build itinerary · GlobeTrotter</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="app-bg">
+
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a href="dashboard.html" class="brand">
+        <svg class="compass" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="17" cy="17" r="15.25" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M22.5 11.5L15.5 15L12 22.5L19 19L22.5 11.5Z" fill="currentColor"/>
+          <circle cx="17" cy="17" r="1.6" fill="var(--sand)"/>
+        </svg>
+        GlobeTrotter
+      </a>
+      <div class="nav-links">
+        <a href="dashboard.html">Dashboard</a>
+        <a href="my-trips.html" class="active">My Trips</a>
+        <a href="search.html">Explore</a>
+        <a href="community.html">Community</a>
+        <a href="calendar.html">Calendar</a>
+      </div>
+      <div class="nav-actions">
+        <a href="create-trip.html" class="btn btn-primary btn-sm">+ Plan a trip</a>
+        <a href="profile.html" class="nav-avatar">A</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container">
+
+    <div class="page-head flex justify-between items-center" style="flex-wrap:wrap;gap:12px;">
+      <div>
+        <div class="eyebrow">Screen 5 &middot; Itinerary builder</div>
+        <h1>Southeast Asia Loop</h1>
+        <p>Add every stop as its own section &mdash; dates, budget, and activities live right where you can see them.</p>
+      </div>
+      <a href="itinerary-view.html" class="btn btn-outline">Preview itinerary &rarr;</a>
+    </div>
+
+    <div data-sections style="max-width:760px;">
+
+      <div class="builder-section">
+        <span class="sec-index">Section 1</span>
+        <h3 style="font-size:1.05rem;">Hanoi, Vietnam</h3>
+        <p class="small mb-0">All the necessary information about this section. This can be anything like a travel leg, hotel stay, or any other activity block.</p>
+        <div class="builder-meta">
+          <div class="meta-field">
+            <label class="small" style="font-weight:600;">Date range</label>
+            <input class="input mono" type="text" placeholder="Jun 10 &rarr; Jun 13" />
+          </div>
+          <div class="meta-field">
+            <label class="small" style="font-weight:600;">Budget for this section</label>
+            <input class="input mono" type="text" placeholder="$420" />
+          </div>
+        </div>
+      </div>
+
+      <div class="builder-section">
+        <span class="sec-index">Section 2</span>
+        <h3 style="font-size:1.05rem;">Ha Long Bay, Vietnam</h3>
+        <p class="small mb-0">All the necessary information about this section. This can be anything like a travel leg, hotel stay, or any other activity block.</p>
+        <div class="builder-meta">
+          <div class="meta-field">
+            <label class="small" style="font-weight:600;">Date range</label>
+            <input class="input mono" type="text" placeholder="Jun 13 &rarr; Jun 15" />
+          </div>
+          <div class="meta-field">
+            <label class="small" style="font-weight:600;">Budget for this section</label>
+            <input class="input mono" type="text" placeholder="$260" />
+          </div>
+        </div>
+      </div>
+
+      <div class="builder-section">
+        <span class="sec-index">Section 3</span>
+        <h3 style="font-size:1.05rem;">Chiang Mai, Thailand</h3>
+        <p class="small mb-0">All the necessary information about this section. This can be anything like a travel leg, hotel stay, or any other activity block.</p>
+        <div class="builder-meta">
+          <div class="meta-field">
+            <label class="small" style="font-weight:600;">Date range</label>
+            <input class="input mono" type="text" placeholder="Jun 15 &rarr; Jun 20" />
+          </div>
+          <div class="meta-field">
+            <label class="small" style="font-weight:600;">Budget for this section</label>
+            <input class="input mono" type="text" placeholder="$510" />
+          </div>
+        </div>
+      </div>
+
+      <button type="button" class="add-section-btn">
+        <span style="font-size:1.1rem;line-height:1;">+</span> Add another section
+      </button>
+
+    </div>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="brand" style="font-size:1rem;">
+        <svg class="compass" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:22px;height:22px;">
+          <circle cx="17" cy="17" r="15.25" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M22.5 11.5L15.5 15L12 22.5L19 19L22.5 11.5Z" fill="currentColor"/>
+        </svg>
+        GlobeTrotter
+      </div>
+      <ul class="footer-links">
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="community.html">Community</a></li>
+        <li><a href="profile.html">Settings</a></li>
+      </ul>
+      <div class="small text-muted">&copy; 2026 GlobeTrotter &mdash; plan it, map it, live it.</div>
+    </div>
+  </footer>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

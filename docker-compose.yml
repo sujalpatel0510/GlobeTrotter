@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: globetrotter_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-globetrotter}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-globetrotter_password}
+      POSTGRES_DB: ${POSTGRES_DB:-globetrotter_db}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-globetrotter} -d ${POSTGRES_DB:-globetrotter_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: globetrotter_web
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - FLASK_APP=run.py
+      - FLASK_ENV=${FLASK_ENV:-development}
+      - FLASK_DEBUG=${FLASK_DEBUG:-1}
+      - SECRET_KEY=${SECRET_KEY:-globetrotter-super-secret-key-change-in-production}
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-globetrotter}:${POSTGRES_PASSWORD:-globetrotter_password}@db:5432/${POSTGRES_DB:-globetrotter_db}
+      - UPLOAD_FOLDER=app/static/uploads
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./app:/app/app
+      - uploads_data:/app/app/static/uploads
+    command: >
+      sh -c "python run.py --init-db && gunicorn --bind 0.0.0.0:5000 --workers 2 --threads 4 --reload run:app"
+
+volumes:
+  postgres_data:
+  uploads_data:

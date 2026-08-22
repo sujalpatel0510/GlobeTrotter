@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin &amp; Analytics · GlobeTrotter</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="app-bg">
+
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a href="dashboard.html" class="brand">
+        <svg class="compass" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="17" cy="17" r="15.25" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M22.5 11.5L15.5 15L12 22.5L19 19L22.5 11.5Z" fill="currentColor"/>
+          <circle cx="17" cy="17" r="1.6" fill="var(--sand)"/>
+        </svg>
+        GlobeTrotter <span class="stamp stamp-coral" style="margin-left:6px;">Admin</span>
+      </a>
+      <div class="nav-links">
+        <a href="dashboard.html">Back to app</a>
+      </div>
+      <div class="nav-actions">
+        <a href="profile.html" class="nav-avatar">A</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container">
+
+    <div class="page-head">
+      <div class="eyebrow">Screen 12 &middot; Admin / analytics (optional)</div>
+      <h1>Platform overview</h1>
+      <p>How people are using GlobeTrotter this month.</p>
+    </div>
+
+    <div class="grid grid-4">
+      <div class="stat-card">
+        <div class="stamp stamp-teal">Trips created</div>
+        <div class="stat-num mt-8">3,214</div>
+        <p class="small mb-0">&uarr; 12% vs last month</p>
+      </div>
+      <div class="stat-card">
+        <div class="stamp stamp-gold">Active users</div>
+        <div class="stat-num mt-8">9,842</div>
+        <p class="small mb-0">&uarr; 6% vs last month</p>
+      </div>
+      <div class="stat-card">
+        <div class="stamp stamp-coral">Top city</div>
+        <div class="stat-num mt-8" style="font-size:1.5rem;">Kyoto</div>
+        <p class="small mb-0">412 trips include it</p>
+      </div>
+      <div class="stat-card">
+        <div class="stamp stamp-teal">Avg. trip budget</div>
+        <div class="stat-num mt-8">$2,860</div>
+        <p class="small mb-0">&darr; 3% vs last month</p>
+      </div>
+    </div>
+
+    <div data-tabs class="tabs mt-24">
+      <button class="tab active" data-tab="users">Manage users</button>
+      <button class="tab" data-tab="cities">Popular cities</button>
+      <button class="tab" data-tab="activities">Popular activities</button>
+      <button class="tab" data-tab="trends">User trends &amp; analytics</button>
+    </div>
+
+    <div data-tab-panel="users" class="card">
+      <table class="table">
+        <thead>
+          <tr><th>Traveler</th><th>Trips</th><th>Joined</th><th>Status</th><th></th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Maya Rao</td><td>14</td><td class="mono">2024-03-02</td><td><span class="stamp stamp-teal">Active</span></td><td><button class="btn btn-ghost btn-sm">Manage</button></td></tr>
+          <tr><td>Diego Martins</td><td>7</td><td class="mono">2024-06-18</td><td><span class="stamp stamp-teal">Active</span></td><td><button class="btn btn-ghost btn-sm">Manage</button></td></tr>
+          <tr><td>Priya Sharma</td><td>21</td><td class="mono">2023-11-27</td><td><span class="stamp stamp-teal">Active</span></td><td><button class="btn btn-ghost btn-sm">Manage</button></td></tr>
+          <tr><td>Tomás Reyes</td><td>3</td><td class="mono">2025-01-09</td><td><span class="stamp stamp-gold">Invited</span></td><td><button class="btn btn-ghost btn-sm">Manage</button></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div data-tab-panel="cities" style="display:none;" class="card">
+      <table class="table">
+        <thead><tr><th>City</th><th>Country</th><th>Trips including it</th><th>Trend</th></tr></thead>
+        <tbody>
+          <tr><td>Kyoto</td><td>Japan</td><td>412</td><td class="mono">&uarr; 18%</td></tr>
+          <tr><td>Lisbon</td><td>Portugal</td><td>301</td><td class="mono">&uarr; 9%</td></tr>
+          <tr><td>Cusco</td><td>Peru</td><td>244</td><td class="mono">&uarr; 4%</td></tr>
+          <tr><td>Reykjavík</td><td>Iceland</td><td>198</td><td class="mono">&darr; 2%</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div data-tab-panel="activities" style="display:none;" class="card">
+      <table class="table">
+        <thead><tr><th>Activity</th><th>Category</th><th>Bookings</th></tr></thead>
+        <tbody>
+          <tr><td>Old town walking tour</td><td>Culture</td><td>1,204</td></tr>
+          <tr><td>Street food crawl</td><td>Food &amp; Drink</td><td>987</td></tr>
+          <tr><td>Tandem paragliding</td><td>Adventure</td><td>512</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div data-tab-panel="trends" style="display:none;" class="grid grid-3" style="margin-bottom:56px;">
+      <div class="stat-card">
+        <div class="stamp stamp-teal">Signups</div>
+        <div class="stat-num mt-8">+842</div>
+        <p class="small mb-0">this month</p>
+      </div>
+      <div class="stat-card">
+        <div class="stamp stamp-gold">Avg. session</div>
+        <div class="stat-num mt-8">7m 40s</div>
+        <p class="small mb-0">across all devices</p>
+      </div>
+      <div class="stat-card">
+        <div class="stamp stamp-coral">Shared itineraries</div>
+        <div class="stat-num mt-8">1,096</div>
+        <p class="small mb-0">public links created</p>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="brand" style="font-size:1rem;">
+        <svg class="compass" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:22px;height:22px;">
+          <circle cx="17" cy="17" r="15.25" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M22.5 11.5L15.5 15L12 22.5L19 19L22.5 11.5Z" fill="currentColor"/>
+        </svg>
+        GlobeTrotter
+      </div>
+      <ul class="footer-links">
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="profile.html">Settings</a></li>
+      </ul>
+      <div class="small text-muted">&copy; 2026 GlobeTrotter &mdash; plan it, map it, live it.</div>
+    </div>
+  </footer>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
