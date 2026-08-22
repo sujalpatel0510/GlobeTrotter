@@ -50,7 +50,7 @@ class TestingConfig(Config):
     # Testing also connects to PostgreSQL test/main DB
     DATABASE_URL = os.environ.get(
         'TEST_DATABASE_URL',
-        'postgresql://globetrotter:globetrotter_password@localhost:5432/globetrotter_db'
+        'postgresql://postgres:8511@localhost:5432/globetrotter_db'
     )
     SQLALCHEMY_DATABASE_URI = DATABASE_URL
     WTF_CSRF_ENABLED = False
