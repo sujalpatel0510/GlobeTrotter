@@ -47,6 +47,39 @@ def search():
     )
 
 
+@explore_bp.route('/explore/add-city-to-catalog', methods=['POST'])
+def add_city_to_catalog():
+    name = request.form.get('name', '').strip()
+    country = request.form.get('country', '').strip()
+    cost_index = request.form.get('cost_index', 'medium').strip()
+    description = request.form.get('description', '').strip()
+    image_pattern = request.form.get('image_pattern', '').strip()
+
+    if not name or not country:
+        flash('City name and country are required.', 'error')
+        return redirect(url_for('explore.search', tab='cities'))
+
+    existing = Destination.query.filter(Destination.name.ilike(name)).first()
+    if existing:
+        flash(f'City "{name}" already exists in the destination catalog.', 'info')
+        return redirect(url_for('explore.search', tab='cities'))
+
+    new_dest = Destination(
+        name=name,
+        country=country,
+        cost_index=cost_index,
+        description=description,
+        image_pattern=image_pattern,
+        trips_count=1,
+        trend='↑ New'
+    )
+    db.session.add(new_dest)
+    db.session.commit()
+
+    flash(f'City "{name}, {country}" added successfully to destinations catalog!', 'success')
+    return redirect(url_for('explore.search', tab='cities'))
+
+
 @explore_bp.route('/explore/add-activity', methods=['POST'])
 def add_activity():
     activity_id = request.form.get('activity_id', type=int)
@@ -111,16 +144,17 @@ def add_city():
     trip = db.session.get(Trip, trip_id)
     if not dest or not trip:
         return redirect(url_for('explore.search'))
-    
+        
+    new_order = trip.sections.count() + 1
     new_section = ItinerarySection(
         trip_id=trip.id,
-        section_order=trip.sections.count() + 1,
+        section_order=new_order,
         title=f"{dest.name}, {dest.country}",
-        description=dest.description or f"Exploring {dest.name}",
-        allocated_budget=500.0
+        description=dest.description or "Exploration stop.",
+        allocated_budget=round(trip.total_budget / max(new_order, 1), 2)
     )
     db.session.add(new_section)
     dest.trips_count = (dest.trips_count or 0) + 1
     db.session.commit()
     
-    return redirect(url_for('itinerary.itinerary_builder', trip_id=trip.id))
+    return redirect(url_for('itinerary.itinerary_view', trip_id=trip.id))

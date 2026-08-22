@@ -5,10 +5,16 @@
 {% block content %}
 <main class="container">
 
-  <div class="page-head">
-    <div class="eyebrow">Destination &amp; Activity Explorer</div>
-    <h1>Explore the World</h1>
-    <p>Discover hand-picked activities and exciting cities to add directly to your itineraries.</p>
+  <div class="page-head flex justify-between items-center" style="flex-wrap:wrap;gap:16px;">
+    <div>
+      <div class="eyebrow">Destination &amp; Activity Explorer</div>
+      <h1>Explore the World</h1>
+      <p>Discover hand-picked activities and exciting cities to add directly to your itineraries.</p>
+    </div>
+    <div class="flex gap-12">
+      <button type="button" class="btn btn-outline" onclick="openModal('add-new-city-catalog-modal');">+ Add New City</button>
+      <a href="{{ url_for('trips.create_trip') }}" class="btn btn-primary">+ Plan a Trip</a>
+    </div>
   </div>
 
   <form method="GET" action="{{ url_for('explore.search') }}" class="toolbar">
@@ -80,6 +86,11 @@
 
   <!-- Cities Panel -->
   <div data-tab-panel="cities" style="{{ '' if active_tab == 'cities' else 'display:none;' }}">
+    <div class="flex justify-between items-center mb-16">
+      <p class="small text-muted mb-0">Showing {{ destinations|length }} catalog destinations in PostgreSQL</p>
+      <button type="button" class="btn btn-outline btn-sm" onclick="openModal('add-new-city-catalog-modal');">+ Add new city to catalog</button>
+    </div>
+
     <div class="grid grid-3" style="margin-bottom:56px;">
       {% for dest in destinations %}
         <div class="card" style="overflow:hidden;display:flex;flex-direction:column;">
@@ -119,6 +130,57 @@
   </div>
 
 </main>
+
+<!-- Modal: Add New City to Catalog -->
+<div id="add-new-city-catalog-modal" class="modal-overlay">
+  <div class="modal-card">
+    <div class="flex justify-between items-center mb-16">
+      <h3 style="margin:0;">Add New City to Destinations</h3>
+      <button type="button" class="btn btn-ghost btn-sm" onclick="closeModal('add-new-city-catalog-modal');">&times;</button>
+    </div>
+    <form method="POST" action="{{ url_for('explore.add_city_to_catalog') }}">
+      <div class="input-row">
+        <div class="field">
+          <label for="city-name">City Name</label>
+          <input class="input" id="city-name" name="name" placeholder="e.g. Barcelona" required />
+        </div>
+        <div class="field">
+          <label for="city-country">Country</label>
+          <input class="input" id="city-country" name="country" placeholder="e.g. Spain" required />
+        </div>
+      </div>
+
+      <div class="input-row">
+        <div class="field">
+          <label for="city-cost">Cost Index</label>
+          <select class="input" id="city-cost" name="cost_index">
+            <option value="low">Budget-Friendly ($ low)</option>
+            <option value="medium" selected>Moderate ($$ medium)</option>
+            <option value="high">Luxury ($$$ high)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="city-pattern">Card Visual Theme</label>
+          <select class="input" id="city-pattern" name="image_pattern">
+            <option value="" selected>Teal &amp; Deep Sea</option>
+            <option value="pat-1">Coral Sunset</option>
+            <option value="pat-2">Desert Gold</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="city-desc">Description</label>
+        <textarea class="input" id="city-desc" name="description" placeholder="Highlights, culture, food or attractions..." style="min-height:80px;"></textarea>
+      </div>
+
+      <div class="flex gap-12 mt-24">
+        <button type="button" class="btn btn-outline" onclick="closeModal('add-new-city-catalog-modal');">Cancel</button>
+        <button type="submit" class="btn btn-primary" style="flex:1;">Save City to Catalog</button>
+      </div>
+    </form>
+  </div>
+</div>
 
 <!-- Modal: Add Activity to Trip -->
 <div id="add-activity-modal" class="modal-overlay">
