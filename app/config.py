@@ -13,7 +13,7 @@ class Config:
     # PostgreSQL Database URL
     DATABASE_URL = os.environ.get(
         'DATABASE_URL',
-        'postgresql://globetrotter:globetrotter_password@localhost:5432/globetrotter_db'
+        'postgresql://postgres:8511@localhost:5432/globetrotter_db'
     )
     if DATABASE_URL.startswith("postgres://"):
         DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
@@ -47,12 +47,10 @@ class ProductionConfig(Config):
 class TestingConfig(Config):
     TESTING = True
     DEBUG = True
-    # Testing also connects to PostgreSQL test/main DB
-    DATABASE_URL = os.environ.get(
-        'TEST_DATABASE_URL',
-        'postgresql://postgres:8511@localhost:5432/globetrotter_db'
-    )
+    # In-memory SQLite for testing to avoid touching/dropping PostgreSQL tables
+    DATABASE_URL = os.environ.get('TEST_DATABASE_URL', 'sqlite:///:memory:')
     SQLALCHEMY_DATABASE_URI = DATABASE_URL
+    SQLALCHEMY_ENGINE_OPTIONS = {}
     WTF_CSRF_ENABLED = False
 
 
