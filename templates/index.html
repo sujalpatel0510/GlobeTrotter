@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Log in · GlobeTrotter</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <div class="auth-shell">
+
+    <!-- Visual side -->
+    <div class="auth-visual">
+      <a href="dashboard.html" class="brand" style="color:var(--paper);">
+        <svg class="compass" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="17" cy="17" r="15.25" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M22.5 11.5L15.5 15L12 22.5L19 19L22.5 11.5Z" fill="currentColor"/>
+          <circle cx="17" cy="17" r="1.6" fill="var(--ink-navy)"/>
+        </svg>
+        GlobeTrotter
+      </a>
+
+      <div>
+        <p class="quote">&ldquo;Every itinerary starts as a blank map &mdash; then somebody draws a line between two pins and calls it a plan.&rdquo;</p>
+      </div>
+
+      <div class="flex gap-16" style="color:rgba(251,247,239,.7);font-family:'JetBrains Mono',monospace;font-size:.78rem;">
+        <span>12,400+ TRIPS PLANNED</span>
+        <span>&middot;</span>
+        <span>86 COUNTRIES</span>
+      </div>
+    </div>
+
+    <!-- Form side -->
+    <div class="auth-form-side">
+      <div class="auth-box">
+        <div class="eyebrow">Screen 1 &middot; Login</div>
+        <h1 style="font-size:2rem;">Welcome back, traveler</h1>
+        <p>Log in to pick up your itineraries right where you left them.</p>
+
+        <form onsubmit="return false;">
+          <div class="field">
+            <label for="username">Username</label>
+            <input class="input" type="text" id="username" name="username" placeholder="e.g. maya.wanders" autocomplete="username" />
+          </div>
+
+          <div class="field">
+            <label for="password">Password</label>
+            <input class="input" type="password" id="password" name="password" placeholder="Enter your password" autocomplete="current-password" />
+            <p class="hint"><a href="#" style="color:var(--atlas-teal);font-weight:600;">Forgot password?</a></p>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-block" onclick="window.location.href='dashboard.html'">Log in</button>
+        </form>
+
+        <div class="divider-or">or</div>
+
+        <button type="button" class="btn btn-outline btn-block" onclick="window.location.href='dashboard.html'">Continue as guest</button>
+
+        <p class="auth-switch">New to GlobeTrotter? <a href="register.html">Create an account</a></p>
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>
