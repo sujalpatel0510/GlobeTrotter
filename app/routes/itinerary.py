@@ -59,7 +59,9 @@ def itinerary_builder(trip_id=None):
         section_budgets = request.form.getlist('section_budget[]')
 
         if section_titles:
-            ItinerarySection.query.filter_by(trip_id=trip.id).delete()
+            for old_sec in list(trip.sections):
+                db.session.delete(old_sec)
+            db.session.flush()
             
             for i, title in enumerate(section_titles):
                 if not title.strip():

@@ -397,12 +397,58 @@ textarea.input{resize:vertical;min-height:110px;}
 .cal-event.gold{background:var(--gold-light);color:#8a6a1f;}
 
 /* ---------------- Community ---------------- */
+.community-hero{
+  background:
+    radial-gradient(circle at 12% 20%, rgba(251,247,239,.16), transparent 45%),
+    linear-gradient(135deg, var(--teal-deep), var(--ink-navy) 80%);
+  color: var(--paper);
+  border-radius: var(--radius-l);
+  padding: 38px 40px;
+  margin-bottom: 28px;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--teal-deep);
+  box-shadow: var(--shadow-card);
+}
+.community-hero h1{color: var(--paper); font-size: 2.2rem; margin-bottom: 8px;}
+.community-hero p{color: rgba(251,247,239,.82); font-size: 1rem; max-width: 640px; margin-bottom: 18px;}
 .community-feed-layout{
   display:grid;
-  grid-template-columns:1fr 300px;
+  grid-template-columns:1fr 320px;
   gap:28px;
   align-items:start;
   margin-bottom:56px;
+}
+.dispatch-composer{
+  background: var(--paper);
+  border: 1.5px dashed var(--line);
+  border-radius: var(--radius-m);
+  padding: 20px 24px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-card);
+  transition: border-color .15s ease, background .15s ease;
+}
+.dispatch-composer:hover{border-color: var(--atlas-teal);}
+.dispatch-card{
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-left: 4.5px solid var(--atlas-teal);
+  border-radius: var(--radius-m);
+  padding: 24px 28px;
+  box-shadow: var(--shadow-card);
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+.dispatch-card:hover{
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-pop);
+}
+.dispatch-card.highlight-coral{border-left-color: var(--coral);}
+.dispatch-card.highlight-gold{border-left-color: var(--gold);}
+.dispatch-quote{
+  font-size: 1.02rem;
+  line-height: 1.65;
+  color: var(--ink-navy);
+  margin: 14px 0 18px;
 }
 .community-post{
   display:flex;
@@ -427,21 +473,22 @@ textarea.input{resize:vertical;min-height:110px;}
   display:inline-flex;
   align-items:center;
   gap:6px;
-  padding:6px 14px;
+  padding:7px 15px;
   border-radius:999px;
   border:1.5px solid var(--line);
-  background:var(--paper);
+  background:var(--sand);
   color:var(--ink-navy);
   font-family:'JetBrains Mono',monospace;
   font-weight:600;
   font-size:.85rem;
   transition:all .18s ease;
+  cursor:pointer;
 }
 .like-btn:hover{
   border-color:var(--coral);
   color:var(--coral);
   background:var(--coral-light);
-  transform:translateY(-1px);
+  transform:scale(1.04);
 }
 .like-btn.liked{
   color:var(--coral);

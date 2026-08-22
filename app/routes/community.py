@@ -39,7 +39,7 @@ def create_post():
 
     trip_name = None
     if trip_id:
-        trip = Trip.query.get(trip_id)
+        trip = db.session.get(Trip, trip_id)
         if trip:
             trip_name = trip.name
 
@@ -63,7 +63,12 @@ def create_post():
 
 @community_bp.route('/community/<int:post_id>/like', methods=['POST'])
 def like_post(post_id):
-    post = CommunityPost.query.get_or_404(post_id)
+    post = db.session.get(CommunityPost, post_id)
+    if not post:
+        if request.is_json or request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return jsonify({'error': 'Post not found'}), 404
+        return redirect(url_for('community.feed'))
+
     post.likes_count = (post.likes_count or 0) + 1
     db.session.commit()
     

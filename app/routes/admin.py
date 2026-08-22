@@ -42,7 +42,8 @@ def dashboard():
 
 @admin_bp.route('/admin/users/<int:user_id>/toggle-status', methods=['POST'])
 def toggle_user_status(user_id):
-    user = User.query.get_or_404(user_id)
-    user.is_active = not user.is_active
-    db.session.commit()
+    user = db.session.get(User, user_id)
+    if user:
+        user.is_active = not user.is_active
+        db.session.commit()
     return redirect(url_for('admin.dashboard'))

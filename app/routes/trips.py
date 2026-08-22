@@ -125,10 +125,11 @@ def create_trip():
 
 
 @trips_bp.route('/trips/<int:trip_id>/delete', methods=['POST'])
-@login_required
 def delete_trip(trip_id):
-    trip = Trip.query.get_or_404(trip_id)
-    if trip.user_id != current_user.id and not current_user.is_admin:
+    trip = db.session.get(Trip, trip_id)
+    if not trip:
+        return redirect(url_for('trips.my_trips'))
+    if current_user.is_authenticated and trip.user_id != current_user.id and not current_user.is_admin:
         abort(403)
 
     db.session.delete(trip)
@@ -138,7 +139,9 @@ def delete_trip(trip_id):
 
 @trips_bp.route('/trips/<int:trip_id>/duplicate', methods=['POST', 'GET'])
 def duplicate_trip(trip_id):
-    original_trip = Trip.query.get_or_404(trip_id)
+    original_trip = db.session.get(Trip, trip_id)
+    if not original_trip:
+        return redirect(url_for('trips.my_trips'))
     user_id = current_user.id if current_user.is_authenticated else 1
 
     new_trip = Trip(
