@@ -60,13 +60,36 @@
           </div>
 
           <div class="field">
-            <label for="password">Password</label>
+            <div class="flex justify-between items-center">
+              <label for="password">Password</label>
+              <a href="#" onclick="openModal('forgot-modal'); return false;" style="font-size:0.8rem;color:var(--atlas-teal);font-weight:600;">Forgot Password?</a>
+            </div>
             <input class="input" type="password" id="password" name="password" placeholder="Enter your password" value="password123" required autocomplete="current-password" />
             <p class="hint"><a href="#" onclick="alert('PostgreSQL Seeded Accounts:\n- Traveler: maya@example.com / password123\n- Admin: admin@globetrotter.com / admin123'); return false;" style="color:var(--atlas-teal);font-weight:600;">Demo credentials hint</a></p>
           </div>
 
           <button type="submit" class="btn btn-primary btn-block">Log in</button>
         </form>
+
+        <div id="forgot-modal" class="modal-overlay">
+          <div class="modal-card">
+            <div class="flex justify-between items-center mb-16">
+              <h3 style="margin:0;">Reset Password</h3>
+              <button type="button" class="btn btn-ghost btn-sm" onclick="closeModal('forgot-modal');">&times;</button>
+            </div>
+            <p class="small text-muted">Enter your registered email address and we'll send you a password reset link.</p>
+            <form onsubmit="alert('A reset link has been sent to your email address.'); closeModal('forgot-modal'); return false;">
+              <div class="field">
+                <label for="reset-email">Email address</label>
+                <input class="input" type="email" id="reset-email" placeholder="e.g. maya@example.com" required />
+              </div>
+              <div class="flex gap-12 mt-24">
+                <button type="button" class="btn btn-outline" onclick="closeModal('forgot-modal');">Cancel</button>
+                <button type="submit" class="btn btn-primary" style="flex:1;">Send Reset Link</button>
+              </div>
+            </form>
+          </div>
+        </div>
 
         <div class="divider-or">or</div>
 

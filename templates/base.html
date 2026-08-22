@@ -24,35 +24,28 @@
         {% endif %}
       </a>
 
-      {% if current_user.is_authenticated %}
       <div class="nav-links">
         <a href="{{ url_for('main.dashboard') }}" class="{{ 'active' if request.endpoint == 'main.dashboard' else '' }}">Dashboard</a>
         <a href="{{ url_for('trips.my_trips') }}" class="{{ 'active' if request.endpoint in ('trips.my_trips', 'itinerary.itinerary_view', 'itinerary.itinerary_builder') else '' }}">My Trips</a>
         <a href="{{ url_for('explore.search') }}" class="{{ 'active' if request.endpoint == 'explore.search' else '' }}">Explore</a>
         <a href="{{ url_for('community.feed') }}" class="{{ 'active' if request.endpoint == 'community.feed' else '' }}">Community</a>
         <a href="{{ url_for('main.calendar_view') }}" class="{{ 'active' if request.endpoint == 'main.calendar_view' else '' }}">Calendar</a>
-        {% if current_user.is_admin %}
+        {% if current_user.is_authenticated and current_user.is_admin %}
           <a href="{{ url_for('admin.dashboard') }}" class="{{ 'active' if request.endpoint == 'admin.dashboard' else '' }}" style="color:var(--coral);">Admin</a>
         {% endif %}
       </div>
 
       <div class="nav-actions">
         <a href="{{ url_for('trips.create_trip') }}" class="btn btn-primary btn-sm">+ Plan a trip</a>
-        <a href="{{ url_for('profile.view_profile') }}" class="nav-avatar" title="{{ current_user.full_name }}">
-          <img src="{{ current_user.display_avatar }}" alt="{{ current_user.full_name }}" />
+        <a href="{{ url_for('profile.view_profile') }}" class="nav-avatar" title="{{ current_user.full_name if current_user.is_authenticated else 'Profile' }}">
+          <img src="{{ current_user.display_avatar if current_user.is_authenticated else 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80' }}" alt="{{ current_user.full_name if current_user.is_authenticated else 'Profile' }}" />
         </a>
-        <a href="{{ url_for('auth.logout') }}" class="btn btn-ghost btn-sm" title="Log out">Log out</a>
+        {% if current_user.is_authenticated %}
+          <a href="{{ url_for('auth.logout') }}" class="btn btn-ghost btn-sm" title="Log out">Log out</a>
+        {% else %}
+          <a href="{{ url_for('auth.login') }}" class="btn btn-ghost btn-sm" title="Log in">Log in</a>
+        {% endif %}
       </div>
-      {% else %}
-      <div class="nav-links">
-        <a href="{{ url_for('explore.search') }}">Explore</a>
-        <a href="{{ url_for('community.feed') }}">Community</a>
-      </div>
-      <div class="nav-actions">
-        <a href="{{ url_for('auth.login') }}" class="btn btn-ghost btn-sm">Log in</a>
-        <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-sm">Sign up</a>
-      </div>
-      {% endif %}
     </div>
   </nav>
 

@@ -3,6 +3,7 @@ from datetime import datetime, date
 from flask import Blueprint, render_template, request, jsonify
 from flask_login import login_required, current_user
 from app.models import db
+from app.models.user import User
 from app.models.trip import Trip
 from app.models.destination import Destination
 
@@ -12,14 +13,9 @@ main_bp = Blueprint('main', __name__)
 @main_bp.route('/dashboard')
 @main_bp.route('/dashboard.html')
 def dashboard():
-    if not current_user.is_authenticated:
-        from app.models.user import User
-        from flask_login import login_user
-        demo_user = User.query.filter_by(email='maya@example.com').first()
-        if demo_user:
-            login_user(demo_user)
-
-    user_id = current_user.id if current_user.is_authenticated else 1
+    user = current_user if current_user.is_authenticated else User.query.filter_by(email='maya@example.com').first()
+    user_id = user.id if user else 1
+    
     user_trips = Trip.query.filter_by(user_id=user_id).order_by(Trip.created_at.desc()).all()
     
     upcoming_trips = [t for t in user_trips if t.status == 'upcoming']
@@ -37,7 +33,8 @@ def dashboard():
         completed_trips=completed_trips,
         budget_trips=budget_trips,
         featured_destinations=featured_destinations,
-        total_trips_count=len(user_trips)
+        total_trips_count=len(user_trips),
+        user=user
     )
 
 
