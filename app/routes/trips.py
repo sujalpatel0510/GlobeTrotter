@@ -114,8 +114,8 @@ def create_trip():
 
         return redirect(url_for('itinerary.itinerary_builder', trip_id=new_trip.id))
 
-    suggested_places = Destination.query.limit(4).all()
-    suggested_activities = Activity.query.limit(4).all()
+    suggested_places = Destination.query.limit(6).all()
+    suggested_activities = Activity.query.limit(8).all()
 
     return render_template(
         'create-trip.html',

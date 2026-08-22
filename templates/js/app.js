@@ -1,4 +1,4 @@
-// GlobeTrotter — shared front-end interactions (no backend, UI only)
+// GlobeTrotter — Frontend Interactions & API Handlers
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -11,12 +11,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Generic tab switcher: elements with [data-tabs] wrapping [data-tab] buttons
-  // and sibling panels with [data-tab-panel]
+  // Generic tab switcher: [data-tabs] -> [data-tab] and [data-tab-panel]
   document.querySelectorAll('[data-tabs]').forEach((group) => {
     const buttons = group.querySelectorAll('[data-tab]');
     buttons.forEach((btn) => {
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
         buttons.forEach((b) => b.classList.remove('active'));
         btn.classList.add('active');
         const target = btn.getAttribute('data-tab');
@@ -28,23 +28,103 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Chip / filter toggle (visual only)
+  // Chip / filter toggle
   document.querySelectorAll('.chip-btn[data-toggle]').forEach((chip) => {
     chip.addEventListener('click', () => chip.classList.toggle('is-active'));
   });
 
-  // Add-section button on Itinerary Builder — clones a blank section
+  // Add-section button on Itinerary Builder
   const addBtn = document.querySelector('.add-section-btn');
   const sectionsWrap = document.querySelector('[data-sections]');
   if (addBtn && sectionsWrap) {
     addBtn.addEventListener('click', () => {
       const sections = sectionsWrap.querySelectorAll('.builder-section');
-      const template = sections[sections.length - 1];
-      const clone = template.cloneNode(true);
       const newIndex = sections.length + 1;
-      clone.querySelector('.sec-index').textContent = 'Section ' + newIndex;
-      clone.querySelectorAll('input').forEach((i) => i.value = '');
-      sectionsWrap.insertBefore(clone, addBtn);
+      
+      const newSection = document.createElement('div');
+      newSection.className = 'builder-section';
+      newSection.innerHTML = `
+        <span class="sec-index">Section ${newIndex}</span>
+        <button type="button" class="btn btn-ghost btn-sm remove-section-btn" style="position:absolute;top:10px;right:14px;color:var(--coral);" onclick="this.closest('.builder-section').remove();">Remove</button>
+        <div class="field" style="margin-top:10px;">
+          <label class="small" style="font-weight:600;">Section Destination / Title</label>
+          <input class="input" type="text" name="section_title[]" placeholder="e.g. Stop ${newIndex}" required />
+        </div>
+        <div class="field">
+          <label class="small" style="font-weight:600;">Description</label>
+          <textarea class="input" name="section_description[]" placeholder="Describe stops, accommodation, or activities..." style="min-height:70px;"></textarea>
+        </div>
+        <div class="builder-meta">
+          <div class="meta-field">
+            <label class="small" style="font-weight:600;">Date range</label>
+            <input class="input mono" type="text" name="section_date_range[]" placeholder="Dates TBD" />
+          </div>
+          <div class="meta-field">
+            <label class="small" style="font-weight:600;">Budget for this section</label>
+            <input class="input mono" type="text" name="section_budget[]" placeholder="$500" />
+          </div>
+        </div>
+      `;
+      sectionsWrap.insertBefore(newSection, addBtn);
     });
   }
+
+  // Community AJAX Like Handlers
+  document.querySelectorAll('.like-btn').forEach((btn) => {
+    btn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      const postId = btn.getAttribute('data-post-id');
+      if (!postId) return;
+
+      try {
+        const res = await fetch(`/community/${postId}/like`, {
+          method: 'POST',
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/json'
+          }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          const countSpan = btn.querySelector('.like-count');
+          if (countSpan && data.likes_count !== undefined) {
+            countSpan.textContent = data.likes_count;
+            btn.style.color = 'var(--coral)';
+          }
+        }
+      } catch (err) {
+        console.error('Like request failed:', err);
+      }
+    });
+  });
+
 });
+
+// Global Modal Helpers
+function openModal(id) {
+  const modal = document.getElementById(id);
+  if (modal) {
+    modal.style.display = 'flex';
+  }
+}
+
+function closeModal(id) {
+  const modal = document.getElementById(id);
+  if (modal) {
+    modal.style.display = 'none';
+  }
+}
+
+// Global Share Link Helper
+function copyShareLink(url) {
+  const fullUrl = window.location.origin + url;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(fullUrl).then(() => {
+      alert('Public itinerary link copied to clipboard:\n' + fullUrl);
+    }).catch(() => {
+      prompt('Copy this share link:', fullUrl);
+    });
+  } else {
+    prompt('Copy this share link:', fullUrl);
+  }
+}

@@ -134,21 +134,63 @@
   </div>
 
   <!-- Trends Panel from PostgreSQL -->
-  <div data-tab-panel="trends" style="display:none;" class="grid grid-3" style="margin-bottom:56px;">
-    <div class="stat-card">
-      <div class="stamp stamp-teal">Signups</div>
-      <div class="stat-num mt-8">+{{ users|length * 210 }}</div>
-      <p class="small mb-0">this month</p>
+  <div data-tab-panel="trends" style="display:none;" style="margin-bottom:56px;">
+    <div class="grid grid-3">
+      <div class="stat-card">
+        <div class="stamp stamp-teal">Signups</div>
+        <div class="stat-num mt-8">+{{ users|length * 210 }}</div>
+        <p class="small mb-0">&uarr; 18% this month</p>
+      </div>
+      <div class="stat-card">
+        <div class="stamp stamp-gold">Avg. session</div>
+        <div class="stat-num mt-8">7m 40s</div>
+        <p class="small mb-0">across all devices</p>
+      </div>
+      <div class="stat-card">
+        <div class="stamp stamp-coral">Shared itineraries</div>
+        <div class="stat-num mt-8">{{ shared_count }}</div>
+        <p class="small mb-0">public links created</p>
+      </div>
     </div>
-    <div class="stat-card">
-      <div class="stamp stamp-gold">Avg. session</div>
-      <div class="stat-num mt-8">7m 40s</div>
-      <p class="small mb-0">across all devices</p>
-    </div>
-    <div class="stat-card">
-      <div class="stamp stamp-coral">Shared itineraries</div>
-      <div class="stat-num mt-8">{{ shared_count }}</div>
-      <p class="small mb-0">public links created</p>
+
+    <div class="grid grid-2 mt-24">
+      <div class="card card-pad">
+        <h3>Destination Interest Distribution</h3>
+        <p class="small text-muted">Trips breakdown by region</p>
+        <div class="mt-16">
+          <div class="flex justify-between mb-0"><span class="small">East Asia (Japan, Vietnam, Thailand)</span><span class="mono small">54%</span></div>
+          <div class="budget-bar mt-8"><span style="width:54%"></span></div>
+        </div>
+        <div class="mt-16">
+          <div class="flex justify-between mb-0"><span class="small">Western &amp; Southern Europe</span><span class="mono small">28%</span></div>
+          <div class="budget-bar mt-8"><span style="width:28%"></span></div>
+        </div>
+        <div class="mt-16">
+          <div class="flex justify-between mb-0"><span class="small">South America &amp; Others</span><span class="mono small">18%</span></div>
+          <div class="budget-bar mt-8"><span style="width:18%"></span></div>
+        </div>
+      </div>
+
+      <div class="card card-pad">
+        <h3>Average Traveler Budget by Category</h3>
+        <p class="small text-muted">Financial breakdown across all itineraries</p>
+        <div class="mt-16">
+          <div class="flex justify-between mb-0"><span class="small">Accommodation &amp; Stays</span><span class="mono small">38%</span></div>
+          <div class="budget-bar mt-8" style="background:var(--teal-light);"><span style="width:38%;background:var(--atlas-teal);"></span></div>
+        </div>
+        <div class="mt-16">
+          <div class="flex justify-between mb-0"><span class="small">Flights &amp; Transport</span><span class="mono small">27%</span></div>
+          <div class="budget-bar mt-8" style="background:var(--coral-light);"><span style="width:27%;background:var(--coral);"></span></div>
+        </div>
+        <div class="mt-16">
+          <div class="flex justify-between mb-0"><span class="small">Curated Tours &amp; Activities</span><span class="mono small">21%</span></div>
+          <div class="budget-bar mt-8" style="background:var(--gold-light);"><span style="width:21%;background:var(--gold);"></span></div>
+        </div>
+        <div class="mt-16">
+          <div class="flex justify-between mb-0"><span class="small">Food &amp; Dining</span><span class="mono small">14%</span></div>
+          <div class="budget-bar mt-8" style="background:var(--line);"><span style="width:14%;background:var(--ink-navy);"></span></div>
+        </div>
+      </div>
     </div>
   </div>
 
