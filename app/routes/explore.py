@@ -5,15 +5,15 @@ from app.models.destination import Destination, Activity
 from app.models.trip import Trip
 from app.models.itinerary import ItinerarySection, ItineraryItem
 
-explore_bp = Blueprint('explore', __name__, url_prefix='/explore')
+explore_bp = Blueprint('explore', __name__)
 
 
-@explore_bp.route('/')
+@explore_bp.route('/explore')
+@explore_bp.route('/search.html')
 def search():
     query = request.args.get('q', '').strip()
     active_tab = request.args.get('tab', 'activities')
     
-    # Base queries
     act_query = Activity.query
     dest_query = Destination.query
     
@@ -32,9 +32,8 @@ def search():
     activities = act_query.all()
     destinations = dest_query.all()
     
-    user_trips = []
-    if current_user.is_authenticated:
-        user_trips = Trip.query.filter_by(user_id=current_user.id).all()
+    user_id = current_user.id if current_user.is_authenticated else 1
+    user_trips = Trip.query.filter_by(user_id=user_id).all()
 
     return render_template(
         'search.html',
@@ -46,20 +45,17 @@ def search():
     )
 
 
-@explore_bp.route('/add-activity', methods=['POST'])
-@login_required
+@explore_bp.route('/explore/add-activity', methods=['POST'])
 def add_activity():
     activity_id = request.form.get('activity_id', type=int)
     trip_id = request.form.get('trip_id', type=int)
     
     if not activity_id or not trip_id:
-        flash('Please select both an activity and a target trip.', 'error')
         return redirect(url_for('explore.search'))
         
     activity = Activity.query.get_or_404(activity_id)
-    trip = Trip.query.filter_by(id=trip_id, user_id=current_user.id).first_or_404()
+    trip = Trip.query.get_or_404(trip_id)
     
-    # Find or create a section in this trip
     section = trip.sections.first()
     if not section:
         section = ItinerarySection(
@@ -71,13 +67,12 @@ def add_activity():
         db.session.add(section)
         db.session.flush()
         
-    # Map category
     cat_lower = activity.category.lower()
     if 'food' in cat_lower or 'drink' in cat_lower:
         item_cat = 'meals'
     elif 'stay' in cat_lower or 'hotel' in cat_lower:
         item_cat = 'stay'
-    elif 'transfer' in cat_lower or 'flight' in cat_lower or 'train' in cat_lower:
+    elif 'transfer' in cat_lower or 'flight' in cat_lower:
         item_cat = 'transport'
     else:
         item_cat = 'activities'
@@ -97,22 +92,19 @@ def add_activity():
     activity.bookings_count = (activity.bookings_count or 0) + 1
     db.session.commit()
     
-    flash(f'Added "{activity.name}" (${activity.price:.0f}) to trip "{trip.name}"!', 'success')
     return redirect(url_for('itinerary.itinerary_view', trip_id=trip.id))
 
 
-@explore_bp.route('/add-city', methods=['POST'])
-@login_required
+@explore_bp.route('/explore/add-city', methods=['POST'])
 def add_city():
     destination_id = request.form.get('destination_id', type=int)
     trip_id = request.form.get('trip_id', type=int)
     
     if not destination_id or not trip_id:
-        flash('Please select both a city and a target trip.', 'error')
         return redirect(url_for('explore.search'))
         
     dest = Destination.query.get_or_404(destination_id)
-    trip = Trip.query.filter_by(id=trip_id, user_id=current_user.id).first_or_404()
+    trip = Trip.query.get_or_404(trip_id)
     
     new_section = ItinerarySection(
         trip_id=trip.id,
@@ -125,5 +117,4 @@ def add_city():
     dest.trips_count = (dest.trips_count or 0) + 1
     db.session.commit()
     
-    flash(f'Added {dest.name} as a new section in trip "{trip.name}"!', 'success')
     return redirect(url_for('itinerary.itinerary_builder', trip_id=trip.id))

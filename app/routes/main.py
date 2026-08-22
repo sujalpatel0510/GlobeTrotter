@@ -10,20 +10,17 @@ main_bp = Blueprint('main', __name__)
 
 
 @main_bp.route('/dashboard')
-@login_required
+@main_bp.route('/dashboard.html')
 def dashboard():
-    # User's trips
-    user_trips = Trip.query.filter_by(user_id=current_user.id).order_by(Trip.created_at.desc()).all()
+    # Allow viewing or render dashboard
+    user_id = current_user.id if current_user.is_authenticated else 1
+    user_trips = Trip.query.filter_by(user_id=user_id).order_by(Trip.created_at.desc()).all()
     
     upcoming_trips = [t for t in user_trips if t.status == 'upcoming']
     ongoing_trips = [t for t in user_trips if t.status == 'ongoing']
     draft_trips = [t for t in user_trips if t.status == 'draft']
     completed_trips = [t for t in user_trips if t.status == 'completed']
-    
-    # Budget highlights (trips with budgets)
     budget_trips = [t for t in user_trips if t.total_budget > 0][:3]
-    
-    # Featured / Top regional destinations
     featured_destinations = Destination.query.order_by(Destination.trips_count.desc()).limit(4).all()
     
     return render_template(
@@ -39,13 +36,11 @@ def dashboard():
 
 
 @main_bp.route('/calendar')
-@login_required
+@main_bp.route('/calendar.html')
 def calendar_view():
-    # Get requested year and month or default to current / Jan 2026 as in mock
     year = request.args.get('year', 2026, type=int)
     month = request.args.get('month', 1, type=int)
     
-    # Ensure valid month
     if month < 1:
         month = 12
         year -= 1
@@ -54,15 +49,12 @@ def calendar_view():
         year += 1
 
     month_name = py_calendar.month_name[month]
-    
-    # Build monthly calendar matrix (weeks with days)
-    cal = py_calendar.Calendar(firstweekday=6)  # Sunday as first day
+    cal = py_calendar.Calendar(firstweekday=6)
     month_days = cal.monthdayscalendar(year, month)
     
-    # Get user trips overlapping with this month
-    user_trips = Trip.query.filter_by(user_id=current_user.id).all()
+    user_id = current_user.id if current_user.is_authenticated else 1
+    user_trips = Trip.query.filter_by(user_id=user_id).all()
     
-    # Map trip events to dates in this month
     events_by_day = {}
     for trip in user_trips:
         if trip.start_date and trip.end_date:

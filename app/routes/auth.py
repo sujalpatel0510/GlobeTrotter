@@ -7,8 +7,9 @@ from app.utils.helpers import save_uploaded_image
 auth_bp = Blueprint('auth', __name__)
 
 
-@auth_bp.route('/login', methods=['GET', 'POST'])
 @auth_bp.route('/', methods=['GET', 'POST'])
+@auth_bp.route('/index.html', methods=['GET', 'POST'])
+@auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
         return redirect(url_for('main.dashboard'))
@@ -21,20 +22,17 @@ def login():
             flash('Please enter both username/email and password.', 'error')
             return render_template('index.html')
 
-        # Find user by email or username
         user = User.query.filter(
             (User.email == identifier) | (User.username == identifier)
         ).first()
 
         if user and user.check_password(password):
             if not user.is_active:
-                flash('Your account has been deactivated. Please contact support.', 'error')
+                flash('Your account has been deactivated.', 'error')
                 return render_template('index.html')
             
             login_user(user, remember=True)
-            flash(f'Welcome back, {user.first_name}!', 'success')
-            next_page = request.args.get('next')
-            return redirect(next_page or url_for('main.dashboard'))
+            return redirect(url_for('main.dashboard'))
         else:
             flash('Invalid credentials. Please check your username and password.', 'error')
 
@@ -42,13 +40,14 @@ def login():
 
 
 @auth_bp.route('/register', methods=['GET', 'POST'])
+@auth_bp.route('/register.html', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
         return redirect(url_for('main.dashboard'))
 
     if request.method == 'POST':
-        first_name = request.form.get('first_name', '').strip()
-        last_name = request.form.get('last_name', '').strip()
+        first_name = request.form.get('first_name') or request.form.get('first-name', '').strip()
+        last_name = request.form.get('last_name') or request.form.get('last-name', '').strip()
         email = request.form.get('email', '').strip().lower()
         password = request.form.get('password', '').strip()
         phone = request.form.get('phone', '').strip()
@@ -61,21 +60,17 @@ def register():
             return render_template('register.html')
 
         if not password:
-            # Default password if not provided
             password = 'password123'
 
-        # Check existing email
         if User.query.filter_by(email=email).first():
             flash('An account with this email already exists. Please log in.', 'warning')
             return redirect(url_for('auth.login'))
 
         username = email.split('@')[0]
-        # Ensure unique username
         existing_u = User.query.filter_by(username=username).first()
         if existing_u:
             username = f"{username}_{User.query.count() + 1}"
 
-        # Handle avatar photo upload if provided
         avatar_url = None
         if 'photo' in request.files:
             file = request.files['photo']
@@ -98,7 +93,6 @@ def register():
         db.session.commit()
 
         login_user(new_user)
-        flash(f'Account created successfully! Welcome to GlobeTrotter, {new_user.first_name}.', 'success')
         return redirect(url_for('main.dashboard'))
 
     return render_template('register.html')
@@ -106,10 +100,9 @@ def register():
 
 @auth_bp.route('/guest-login')
 def guest_login():
-    """Logs in as demo user Maya Rao for instant exploration."""
+    """Logs in as demo user Maya Rao."""
     demo_user = User.query.filter_by(email='maya@example.com').first()
     if not demo_user:
-        # Create demo user if not present
         demo_user = User(
             first_name='Maya',
             last_name='Rao',
@@ -117,19 +110,17 @@ def guest_login():
             email='maya@example.com',
             city='Ahmedabad',
             country='India',
-            about='Slow traveler, street food enthusiast, and lover of mountain trails.'
+            about='Slow traveler, street food enthusiast.'
         )
         demo_user.set_password('password123')
         db.session.add(demo_user)
         db.session.commit()
 
     login_user(demo_user)
-    flash(f'Logged in as guest demo user ({demo_user.full_name}).', 'success')
     return redirect(url_for('main.dashboard'))
 
 
 @auth_bp.route('/logout')
 def logout():
     logout_user()
-    flash('You have been logged out successfully.', 'info')
     return redirect(url_for('auth.login'))

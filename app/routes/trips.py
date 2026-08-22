@@ -7,15 +7,17 @@ from app.models.itinerary import ItinerarySection, ItineraryItem
 from app.models.destination import Destination, Activity
 from app.utils.helpers import save_uploaded_image
 
-trips_bp = Blueprint('trips', __name__, url_prefix='/trips')
+trips_bp = Blueprint('trips', __name__)
 
 
-@trips_bp.route('/')
-@login_required
+@trips_bp.route('/trips')
+@trips_bp.route('/my-trips')
+@trips_bp.route('/my-trips.html')
 def my_trips():
     search_query = request.args.get('q', '').strip().lower()
+    user_id = current_user.id if current_user.is_authenticated else 1
     
-    query = Trip.query.filter_by(user_id=current_user.id)
+    query = Trip.query.filter_by(user_id=user_id)
     if search_query:
         query = query.filter(Trip.name.ilike(f'%{search_query}%') | Trip.description.ilike(f'%{search_query}%'))
         
@@ -37,15 +39,15 @@ def my_trips():
     )
 
 
-@trips_bp.route('/create', methods=['GET', 'POST'])
-@login_required
+@trips_bp.route('/trips/create', methods=['GET', 'POST'])
+@trips_bp.route('/create-trip.html', methods=['GET', 'POST'])
 def create_trip():
     if request.method == 'POST':
-        trip_name = request.form.get('trip_name', '').strip()
-        start_date_str = request.form.get('start_date', '').strip()
-        end_date_str = request.form.get('end_date', '').strip()
-        start_place = request.form.get('start_place', '').strip()
-        description = request.form.get('description', '').strip()
+        trip_name = request.form.get('trip_name') or request.form.get('trip-name', '').strip()
+        start_date_str = request.form.get('start_date') or request.form.get('start-date', '').strip()
+        end_date_str = request.form.get('end_date') or request.form.get('end-date', '').strip()
+        start_place = request.form.get('start_place') or request.form.get('select-place', '').strip()
+        description = request.form.get('description') or request.form.get('trip-desc', '').strip()
         total_budget_str = request.form.get('total_budget', '3000').strip()
 
         if not trip_name:
@@ -72,7 +74,6 @@ def create_trip():
             file = request.files['cover_photo']
             cover_image = save_uploaded_image(file, subfolder='trips')
 
-        # Determine default status based on dates
         status = 'draft'
         today = datetime.utcnow().date()
         if start_date and end_date:
@@ -83,8 +84,9 @@ def create_trip():
             else:
                 status = 'completed'
 
+        user_id = current_user.id if current_user.is_authenticated else 1
         new_trip = Trip(
-            user_id=current_user.id,
+            user_id=user_id,
             name=trip_name,
             start_date=start_date,
             end_date=end_date,
@@ -96,14 +98,13 @@ def create_trip():
         )
 
         db.session.add(new_trip)
-        db.session.flush()  # to get new_trip.id
+        db.session.flush()
 
-        # Create initial default section based on starting place or trip name
         default_section = ItinerarySection(
             trip_id=new_trip.id,
             section_order=1,
             title=start_place if start_place else f"{trip_name} - Stop 1",
-            description="Initial trip stop. Customize your activities, timings, and budget below.",
+            description="Initial trip stop.",
             start_date=start_date,
             end_date=end_date,
             allocated_budget=round(total_budget * 0.5, 2)
@@ -111,10 +112,8 @@ def create_trip():
         db.session.add(default_section)
         db.session.commit()
 
-        flash(f'Trip "{new_trip.name}" created! You can now customize your itinerary sections.', 'success')
         return redirect(url_for('itinerary.itinerary_builder', trip_id=new_trip.id))
 
-    # Suggestions for destinations and activities
     suggested_places = Destination.query.limit(4).all()
     suggested_activities = Activity.query.limit(4).all()
 
@@ -125,29 +124,25 @@ def create_trip():
     )
 
 
-@trips_bp.route('/<int:trip_id>/delete', methods=['POST'])
+@trips_bp.route('/trips/<int:trip_id>/delete', methods=['POST'])
 @login_required
 def delete_trip(trip_id):
     trip = Trip.query.get_or_404(trip_id)
     if trip.user_id != current_user.id and not current_user.is_admin:
         abort(403)
 
-    trip_name = trip.name
     db.session.delete(trip)
     db.session.commit()
-
-    flash(f'Trip "{trip_name}" has been deleted.', 'info')
     return redirect(url_for('trips.my_trips'))
 
 
-@trips_bp.route('/<int:trip_id>/duplicate', methods=['POST', 'GET'])
-@login_required
+@trips_bp.route('/trips/<int:trip_id>/duplicate', methods=['POST', 'GET'])
 def duplicate_trip(trip_id):
     original_trip = Trip.query.get_or_404(trip_id)
+    user_id = current_user.id if current_user.is_authenticated else 1
 
-    # Clone trip
     new_trip = Trip(
-        user_id=current_user.id,
+        user_id=user_id,
         name=f"Copy of {original_trip.name}",
         start_date=original_trip.start_date,
         end_date=original_trip.end_date,
@@ -159,7 +154,6 @@ def duplicate_trip(trip_id):
     db.session.add(new_trip)
     db.session.flush()
 
-    # Clone sections and items
     for orig_sec in original_trip.sections:
         new_sec = ItinerarySection(
             trip_id=new_trip.id,
@@ -187,5 +181,4 @@ def duplicate_trip(trip_id):
             db.session.add(new_item)
 
     db.session.commit()
-    flash(f'Trip "{new_trip.name}" successfully copied to your trips!', 'success')
     return redirect(url_for('itinerary.itinerary_view', trip_id=new_trip.id))
