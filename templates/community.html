@@ -30,8 +30,8 @@
 
     {% for post in posts %}
       <div class="community-post">
-        <div class="post-avatar" style="{{ 'background:var(--atlas-teal-light);border-color:var(--atlas-teal);' if post.avatar_color_class == 'teal' else ('background:var(--coral-light);border-color:var(--coral);' if post.avatar_color_class == 'coral' else '') }}">
-          {{ post.author.initial if post.author else 'T' }}
+        <div class="post-avatar">
+          <img src="{{ post.author.display_avatar if post.author else 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80' }}" alt="{{ post.author.full_name if post.author else 'Traveler' }}" />
         </div>
         <div style="flex:1;">
           <div class="flex justify-between items-center">

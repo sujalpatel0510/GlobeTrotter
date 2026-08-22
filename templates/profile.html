@@ -15,11 +15,7 @@
     <!-- Profile card from PostgreSQL -->
     <div class="card card-pad text-center">
       <div style="width:120px;height:120px;border-radius:50%;background:var(--gold-light);border:3px solid var(--gold);margin:0 auto 16px;display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-size:2.4rem;font-weight:700;color:var(--teal-deep);overflow:hidden;">
-        {% if user and user.avatar_url %}
-          <img src="{{ url_for('static', filename=user.avatar_url) }}" alt="{{ user.full_name }}" style="width:100%;height:100%;object-fit:cover;" />
-        {% else %}
-          {{ user.initial if user else 'M' }}
-        {% endif %}
+        <img src="{{ user.display_avatar if user else 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80' }}" alt="{{ user.full_name if user else 'Maya Rao' }}" style="width:100%;height:100%;object-fit:cover;" />
       </div>
       <h3 style="font-size:1.1rem;margin-bottom:4px;">{{ user.full_name if user else 'Maya Rao' }}</h3>
       <p class="small text-muted mb-16">{{ user.city if user and user.city else 'Ahmedabad' }}{% if user and user.country %}, {{ user.country }}{% endif %}</p>

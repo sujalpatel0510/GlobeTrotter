@@ -44,7 +44,12 @@
         <circle cx="17" cy="17" r="15.25" stroke="var(--paper)" stroke-width="1"/>
         <path d="M22.5 11.5L15.5 15L12 22.5L19 19L22.5 11.5Z" fill="var(--paper)"/>
       </svg>
-      <div class="eyebrow" style="color:var(--gold);">Shared by {{ trip.owner.full_name }}</div>
+      <div class="flex items-center gap-12 mb-12">
+        <div class="nav-avatar" style="width:36px;height:36px;">
+          <img src="{{ trip.owner.display_avatar if trip.owner else 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80' }}" alt="{{ trip.owner.full_name }}" />
+        </div>
+        <div class="eyebrow" style="color:var(--gold);margin:0;">Shared by {{ trip.owner.full_name }}</div>
+      </div>
       <h1>{{ trip.name }}</h1>
       <p>{{ trip.date_range_full }} &middot; {{ trip.description or 'Custom curated travel itinerary.' }}</p>
       <div class="flex gap-12 mt-24" style="flex-wrap:wrap;">

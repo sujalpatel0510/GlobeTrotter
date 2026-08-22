@@ -58,7 +58,14 @@
       <tbody>
         {% for u in users %}
           <tr>
-            <td><strong>{{ u.full_name }}</strong></td>
+            <td>
+              <div class="flex items-center gap-8">
+                <div class="nav-avatar" style="width:28px;height:28px;">
+                  <img src="{{ u.display_avatar }}" alt="{{ u.full_name }}" />
+                </div>
+                <strong>{{ u.full_name }}</strong>
+              </div>
+            </td>
             <td class="mono small">{{ u.email }}</td>
             <td>{{ u.trips_count }}</td>
             <td class="mono">{{ u.created_at|date_format('%Y-%m-%d') }}</td>
