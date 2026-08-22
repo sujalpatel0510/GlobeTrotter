@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Log in · GlobeTrotter</title>
-  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
 </head>
 <body>
 
@@ -12,7 +12,7 @@
 
     <!-- Visual side -->
     <div class="auth-visual">
-      <a href="dashboard.html" class="brand" style="color:var(--paper);">
+      <a href="{{ url_for('auth.login') }}" class="brand" style="color:var(--paper);">
         <svg class="compass" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
           <circle cx="17" cy="17" r="15.25" stroke="currentColor" stroke-width="1.5"/>
           <path d="M22.5 11.5L15.5 15L12 22.5L19 19L22.5 11.5Z" fill="currentColor"/>
@@ -39,30 +39,45 @@
         <h1 style="font-size:2rem;">Welcome back, traveler</h1>
         <p>Log in to pick up your itineraries right where you left them.</p>
 
-        <form onsubmit="return false;">
+        <!-- Flash messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div class="flash-container" style="margin: 12px 0;">
+              {% for category, message in messages %}
+                <div class="alert alert-{{ category if category != 'error' else 'danger' }}">
+                  <span>{{ message }}</span>
+                  <button type="button" class="alert-close" onclick="this.parentElement.remove();">&times;</button>
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+
+        <form method="POST" action="{{ url_for('auth.login') }}">
           <div class="field">
-            <label for="username">Username</label>
-            <input class="input" type="text" id="username" name="username" placeholder="e.g. maya.wanders" autocomplete="username" />
+            <label for="username">Username or Email</label>
+            <input class="input" type="text" id="username" name="username" placeholder="e.g. maya@example.com" value="maya@example.com" required autocomplete="username" />
           </div>
 
           <div class="field">
             <label for="password">Password</label>
-            <input class="input" type="password" id="password" name="password" placeholder="Enter your password" autocomplete="current-password" />
-            <p class="hint"><a href="#" style="color:var(--atlas-teal);font-weight:600;">Forgot password?</a></p>
+            <input class="input" type="password" id="password" name="password" placeholder="Enter your password" value="password123" required autocomplete="current-password" />
+            <p class="hint"><a href="#" onclick="alert('PostgreSQL Seeded Accounts:\n- Traveler: maya@example.com / password123\n- Admin: admin@globetrotter.com / admin123'); return false;" style="color:var(--atlas-teal);font-weight:600;">Demo credentials hint</a></p>
           </div>
 
-          <button type="submit" class="btn btn-primary btn-block" onclick="window.location.href='dashboard.html'">Log in</button>
+          <button type="submit" class="btn btn-primary btn-block">Log in</button>
         </form>
 
         <div class="divider-or">or</div>
 
-        <button type="button" class="btn btn-outline btn-block" onclick="window.location.href='dashboard.html'">Continue as guest</button>
+        <a href="{{ url_for('auth.guest_login') }}" class="btn btn-outline btn-block text-center">Continue as guest (Maya Rao)</a>
 
-        <p class="auth-switch">New to GlobeTrotter? <a href="register.html">Create an account</a></p>
+        <p class="auth-switch">New to GlobeTrotter? <a href="{{ url_for('auth.register') }}">Create an account</a></p>
       </div>
     </div>
 
   </div>
 
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 </body>
 </html>

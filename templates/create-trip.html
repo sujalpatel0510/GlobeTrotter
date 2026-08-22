@@ -1,123 +1,94 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Plan a new trip · GlobeTrotter</title>
-  <link rel="stylesheet" href="css/style.css" />
-</head>
-<body class="app-bg">
+{% extends "base.html" %}
 
-  <nav class="navbar">
-    <div class="navbar-inner">
-      <a href="dashboard.html" class="brand">
-        <svg class="compass" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="17" cy="17" r="15.25" stroke="currentColor" stroke-width="1.5"/>
-          <path d="M22.5 11.5L15.5 15L12 22.5L19 19L22.5 11.5Z" fill="currentColor"/>
-          <circle cx="17" cy="17" r="1.6" fill="var(--sand)"/>
-        </svg>
-        GlobeTrotter
-      </a>
-      <div class="nav-links">
-        <a href="dashboard.html">Dashboard</a>
-        <a href="my-trips.html">My Trips</a>
-        <a href="search.html">Explore</a>
-        <a href="community.html">Community</a>
-        <a href="calendar.html">Calendar</a>
+{% block title %}Plan a new trip · GlobeTrotter{% endblock %}
+
+{% block content %}
+<main class="container">
+
+  <div class="page-head">
+    <div class="eyebrow">Screen 4 &middot; Create trip</div>
+    <h1>Plan a new trip</h1>
+    <p>Give it a name and rough dates &mdash; you can refine every stop once the board is open.</p>
+  </div>
+
+  <div class="grid" style="grid-template-columns:1.1fr .9fr;gap:32px;align-items:start;margin-bottom:56px;">
+
+    <form class="card card-pad" method="POST" action="{{ url_for('trips.create_trip') }}" enctype="multipart/form-data">
+      <div class="field">
+        <label for="trip-name">Trip name</label>
+        <input class="input" id="trip-name" name="trip_name" type="text" placeholder="e.g. Southeast Asia Loop" required />
       </div>
-      <div class="nav-actions">
-        <a href="create-trip.html" class="btn btn-primary btn-sm">+ Plan a trip</a>
-        <a href="profile.html" class="nav-avatar">A</a>
+
+      <div class="input-row">
+        <div class="field">
+          <label for="start-date">Start date</label>
+          <input class="input" id="start-date" name="start_date" type="date" />
+        </div>
+        <div class="field">
+          <label for="end-date">End date</label>
+          <input class="input" id="end-date" name="end_date" type="date" />
+        </div>
       </div>
-    </div>
-  </nav>
 
-  <main class="container">
+      <div class="field">
+        <label for="select-place">Starting place / Main destination</label>
+        <input class="input" id="select-place" name="start_place" type="text" placeholder="Search for a city, e.g. Kyoto, Hanoi, Lisbon..." />
+      </div>
 
-    <div class="page-head">
-      <div class="eyebrow">Screen 4 &middot; Create trip</div>
-      <h1>Plan a new trip</h1>
-      <p>Give it a name and rough dates &mdash; you can refine every stop once the board is open.</p>
-    </div>
+      <div class="field">
+        <label for="total-budget">Total Estimated Budget ($)</label>
+        <input class="input mono" id="total-budget" name="total_budget" type="number" step="50" placeholder="e.g. 3000" value="3000" />
+      </div>
 
-    <div class="grid" style="grid-template-columns:1.1fr .9fr;gap:32px;align-items:start;">
+      <div class="field">
+        <label for="trip-desc">Trip description</label>
+        <textarea class="input" id="trip-desc" name="description" placeholder="What's the mood of this trip? Slow food tour, backpacking loop, family reunion..."></textarea>
+      </div>
 
-      <form class="card card-pad" onsubmit="return false;">
-        <div class="field">
-          <label for="trip-name">Trip name</label>
-          <input class="input" id="trip-name" type="text" placeholder="e.g. Southeast Asia Loop" />
-        </div>
+      <div class="field">
+        <label>Cover photo</label>
+        <label for="cover-photo" class="upload-drop" style="display:block;">
+          <span>Drag a cover photo here, or click to upload (optional)</span>
+        </label>
+        <input type="file" id="cover-photo" name="cover_photo" accept="image/*" style="display:none;" />
+      </div>
 
-        <div class="input-row">
-          <div class="field">
-            <label for="start-date">Start date</label>
-            <input class="input" id="start-date" type="date" />
+      <button type="submit" class="btn btn-primary btn-block">Save &amp; start building itinerary</button>
+    </form>
+
+    <aside>
+      <h2 style="font-size:1.15rem;">Suggestions for places to visit</h2>
+      <p class="small">Based on PostgreSQL destination catalog.</p>
+      <div class="grid" style="grid-template-columns:1fr 1fr;gap:16px;">
+        {% for dest in suggested_places %}
+          <div class="dest-tile {{ dest.image_pattern }}" style="height:130px;cursor:pointer;" onclick="document.getElementById('select-place').value='{{ dest.name }}, {{ dest.country }}';">
+            <div>
+              <div class="dest-label">{{ dest.name }}</div>
+              <div class="dest-sub">{{ dest.country|upper }}</div>
+            </div>
           </div>
-          <div class="field">
-            <label for="end-date">End date</label>
-            <input class="input" id="end-date" type="date" />
-          </div>
-        </div>
-
-        <div class="field">
-          <label for="select-place">Select a starting place</label>
-          <input class="input" id="select-place" type="text" placeholder="Search for a city or airport&hellip;" />
-        </div>
-
-        <div class="field">
-          <label for="trip-desc">Trip description</label>
-          <textarea class="input" id="trip-desc" placeholder="What's the mood of this trip? Slow food tour, backpacking loop, family reunion..."></textarea>
-        </div>
-
-        <div class="field">
-          <label>Cover photo</label>
-          <div class="upload-drop">Drag a cover photo here, or click to upload (optional)</div>
-        </div>
-
-        <button type="submit" class="btn btn-primary btn-block" onclick="window.location.href='itinerary-builder.html'">Save &amp; start building itinerary</button>
-      </form>
-
-      <aside>
-        <h2 style="font-size:1.15rem;">Suggestions for places to visit</h2>
-        <p class="small">Based on trips travelers like you have planned recently.</p>
-        <div class="grid" style="grid-template-columns:1fr 1fr;gap:16px;">
+        {% else %}
           <div class="dest-tile" style="height:130px;"><div><div class="dest-label">Hanoi</div><div class="dest-sub">VIETNAM</div></div></div>
           <div class="dest-tile pat-1" style="height:130px;"><div><div class="dest-label">Chiang Mai</div><div class="dest-sub">THAILAND</div></div></div>
           <div class="dest-tile pat-2" style="height:130px;"><div><div class="dest-label">Ubud</div><div class="dest-sub">INDONESIA</div></div></div>
           <div class="dest-tile" style="height:130px;"><div><div class="dest-label">Siem Reap</div><div class="dest-sub">CAMBODIA</div></div></div>
-        </div>
+        {% endfor %}
+      </div>
 
-        <h2 style="font-size:1.15rem;" class="mt-24">Suggested activities</h2>
-        <ul class="flex" style="flex-wrap:wrap;gap:10px;">
+      <h2 style="font-size:1.15rem;" class="mt-24">Suggested activities</h2>
+      <ul class="flex" style="flex-wrap:wrap;gap:10px;">
+        {% for act in suggested_activities %}
+          <li class="tag" style="cursor:pointer;" onclick="document.getElementById('trip-desc').value += ' · {{ act.name }}';">{{ act.name }}</li>
+        {% else %}
           <li class="tag">Street food crawl</li>
           <li class="tag">Temple hopping</li>
           <li class="tag">Scooter rental</li>
           <li class="tag">Cooking class</li>
-        </ul>
-      </aside>
-
-    </div>
-
-  </main>
-
-  <footer class="site-footer">
-    <div class="container">
-      <div class="brand" style="font-size:1rem;">
-        <svg class="compass" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:22px;height:22px;">
-          <circle cx="17" cy="17" r="15.25" stroke="currentColor" stroke-width="1.5"/>
-          <path d="M22.5 11.5L15.5 15L12 22.5L19 19L22.5 11.5Z" fill="currentColor"/>
-        </svg>
-        GlobeTrotter
-      </div>
-      <ul class="footer-links">
-        <li><a href="dashboard.html">Dashboard</a></li>
-        <li><a href="community.html">Community</a></li>
-        <li><a href="profile.html">Settings</a></li>
+        {% endfor %}
       </ul>
-      <div class="small text-muted">&copy; 2026 GlobeTrotter &mdash; plan it, map it, live it.</div>
-    </div>
-  </footer>
+    </aside>
 
-  <script src="js/app.js"></script>
-</body>
-</html>
+  </div>
+
+</main>
+{% endblock %}

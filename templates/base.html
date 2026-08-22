@@ -1,106 +1,89 @@
 <!DOCTYPE html>
-<!--
-  ============================================================
-  GLOBETROTTER — BASE.HTML
-  ============================================================
-  This is the master layout every other page in this project
-  "extends". Plain HTML has no real template inheritance, so
-  each page below copies this exact shell — same <head>, same
-  .navbar, same .site-footer, same css/style.css + js/app.js —
-  and only replaces the content inside <main class="container">.
-
-  Sections marked below are the contract every page follows:
-
-    1. <head>      — fonts + css/style.css (identical everywhere)
-    2. .navbar     — global nav, identical on every logged-in page
-    3. main         — PAGE-SPECIFIC CONTENT GOES HERE
-    4. .site-footer — identical on every page
-    5. js/app.js    — identical on every page
-
-  This file also doubles as a small component reference (buttons,
-  cards, tags, stamps) so any new page can be built from parts
-  already defined in css/style.css instead of inventing new ones.
-  ============================================================
--->
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Base Layout · GlobeTrotter</title>
-  <link rel="stylesheet" href="css/style.css" />
+  <title>{% block title %}GlobeTrotter · Plan it, map it, live it{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+  {% block head %}{% endblock %}
 </head>
 <body class="app-bg">
 
-  <!-- ============ 2. GLOBAL NAVBAR (copy verbatim into every logged-in page) ============ -->
+  <!-- ============ GLOBAL NAVBAR ============ -->
   <nav class="navbar">
     <div class="navbar-inner">
-      <a href="dashboard.html" class="brand">
+      <a href="{{ url_for('main.dashboard') if current_user.is_authenticated else url_for('auth.login') }}" class="brand">
         <svg class="compass" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
           <circle cx="17" cy="17" r="15.25" stroke="currentColor" stroke-width="1.5"/>
           <path d="M22.5 11.5L15.5 15L12 22.5L19 19L22.5 11.5Z" fill="currentColor"/>
           <circle cx="17" cy="17" r="1.6" fill="var(--sand)"/>
         </svg>
         GlobeTrotter
+        {% if current_user.is_authenticated and current_user.is_admin %}
+          <span class="stamp stamp-coral" style="margin-left:6px;font-size:0.65rem;">Admin</span>
+        {% endif %}
       </a>
 
+      {% if current_user.is_authenticated %}
       <div class="nav-links">
-        <a href="dashboard.html">Dashboard</a>
-        <a href="my-trips.html">My Trips</a>
-        <a href="search.html">Explore</a>
-        <a href="community.html">Community</a>
-        <a href="calendar.html">Calendar</a>
+        <a href="{{ url_for('main.dashboard') }}" class="{{ 'active' if request.endpoint == 'main.dashboard' else '' }}">Dashboard</a>
+        <a href="{{ url_for('trips.my_trips') }}" class="{{ 'active' if request.endpoint in ('trips.my_trips', 'itinerary.itinerary_view', 'itinerary.itinerary_builder') else '' }}">My Trips</a>
+        <a href="{{ url_for('explore.search') }}" class="{{ 'active' if request.endpoint == 'explore.search' else '' }}">Explore</a>
+        <a href="{{ url_for('community.feed') }}" class="{{ 'active' if request.endpoint == 'community.feed' else '' }}">Community</a>
+        <a href="{{ url_for('main.calendar_view') }}" class="{{ 'active' if request.endpoint == 'main.calendar_view' else '' }}">Calendar</a>
+        {% if current_user.is_admin %}
+          <a href="{{ url_for('admin.dashboard') }}" class="{{ 'active' if request.endpoint == 'admin.dashboard' else '' }}" style="color:var(--coral);">Admin</a>
+        {% endif %}
       </div>
 
       <div class="nav-actions">
-        <a href="create-trip.html" class="btn btn-primary btn-sm">+ Plan a trip</a>
-        <a href="profile.html" class="nav-avatar">A</a>
+        <a href="{{ url_for('trips.create_trip') }}" class="btn btn-primary btn-sm">+ Plan a trip</a>
+        <a href="{{ url_for('profile.view_profile') }}" class="nav-avatar" title="{{ current_user.full_name }}">
+          {{ current_user.initial }}
+        </a>
+        <a href="{{ url_for('auth.logout') }}" class="btn btn-ghost btn-sm" title="Log out">Log out</a>
       </div>
+      {% else %}
+      <div class="nav-links">
+        <a href="{{ url_for('explore.search') }}">Explore</a>
+        <a href="{{ url_for('community.feed') }}">Community</a>
+      </div>
+      <div class="nav-actions">
+        <a href="{{ url_for('auth.login') }}" class="btn btn-ghost btn-sm">Log in</a>
+        <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-sm">Sign up</a>
+      </div>
+      {% endif %}
     </div>
   </nav>
 
-  <!-- ============ 3. PAGE CONTENT — replace everything inside <main> ============ -->
-  <main class="container">
-
-    <div class="page-head">
-      <div class="eyebrow">Base template</div>
-      <h1>This is the shell every screen is built on</h1>
-      <p class="small">Swap this block for the real page content. Keep the navbar above and footer below unchanged so every screen in the app feels like one product.</p>
-    </div>
-
-    <div class="section-head">
-      <h2>Component reference</h2>
-      <span class="see-all small">used across all pages</span>
-    </div>
-
-    <div class="grid grid-3">
-      <div class="card card-pad">
-        <div class="stamp stamp-teal">Buttons</div>
-        <div class="mt-16 flex gap-12" style="flex-wrap:wrap;">
-          <button class="btn btn-primary">Primary</button>
-          <button class="btn btn-navy">Navy</button>
-          <button class="btn btn-outline">Outline</button>
+  <!-- ============ FLASH NOTIFICATIONS ============ -->
+  <div class="container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-container" style="margin:16px 0;">
+          {% for category, message in messages %}
+            <div class="alert alert-{{ category if category != 'error' else 'danger' }}">
+              <span>{{ message }}</span>
+              <button type="button" class="alert-close" onclick="this.parentElement.remove();">&times;</button>
+            </div>
+          {% endfor %}
         </div>
-      </div>
-      <div class="card card-pad">
-        <div class="stamp stamp-coral">Tags</div>
-        <div class="mt-16 flex gap-12" style="flex-wrap:wrap;">
-          <span class="tag is-active">Adventure</span>
-          <span class="tag">Food &amp; Drink</span>
-          <span class="tag">Culture</span>
-        </div>
-      </div>
-      <div class="card card-pad">
-        <div class="stamp stamp-gold">Budget bar</div>
-        <div class="mt-16">
-          <div class="budget-bar"><span style="width:64%"></span></div>
-          <p class="small mt-8 mb-0">64% of budget used</p>
-        </div>
-      </div>
-    </div>
+      {% endif %}
+    {% endwith %}
+  </div>
 
-  </main>
+  <!-- ============ PAGE CONTENT ============ -->
+  {% block content %}
+    <main class="container">
+      <div class="page-head">
+        <div class="eyebrow">Base template</div>
+        <h1>GlobeTrotter Master Shell</h1>
+        <p class="small">Master layout powered by PostgreSQL database.</p>
+      </div>
+    </main>
+  {% endblock %}
 
-  <!-- ============ 4. GLOBAL FOOTER (copy verbatim into every page) ============ -->
+  <!-- ============ GLOBAL FOOTER ============ -->
   <footer class="site-footer">
     <div class="container">
       <div class="brand" style="font-size:1rem;">
@@ -111,15 +94,22 @@
         GlobeTrotter
       </div>
       <ul class="footer-links">
-        <li><a href="dashboard.html">Dashboard</a></li>
-        <li><a href="community.html">Community</a></li>
-        <li><a href="profile.html">Settings</a></li>
+        {% if current_user.is_authenticated %}
+          <li><a href="{{ url_for('main.dashboard') }}">Dashboard</a></li>
+          <li><a href="{{ url_for('trips.my_trips') }}">My Trips</a></li>
+          <li><a href="{{ url_for('community.feed') }}">Community</a></li>
+          <li><a href="{{ url_for('profile.view_profile') }}">Settings</a></li>
+        {% else %}
+          <li><a href="{{ url_for('auth.login') }}">Log in</a></li>
+          <li><a href="{{ url_for('auth.register') }}">Sign up</a></li>
+          <li><a href="{{ url_for('explore.search') }}">Explore</a></li>
+        {% endif %}
       </ul>
-      <div class="small text-muted">&copy; 2026 GlobeTrotter — plan it, map it, live it.</div>
+      <div class="small text-muted">&copy; 2026 GlobeTrotter &mdash; plan it, map it, live it.</div>
     </div>
   </footer>
 
-  <!-- ============ 5. SHARED JS ============ -->
-  <script src="js/app.js"></script>
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+  {% block scripts %}{% endblock %}
 </body>
 </html>

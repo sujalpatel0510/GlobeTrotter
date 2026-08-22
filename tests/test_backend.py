@@ -58,7 +58,6 @@ class BackendTestCase(unittest.TestCase):
         self.assertEqual(trip.duration_days, 10)
         self.assertEqual(trip.total_spent, 0.0)
 
-        # Add section and items
         sec = ItinerarySection(trip=trip, title='Oslo', allocated_budget=1000.0)
         db.session.add(sec)
         db.session.commit()
@@ -90,13 +89,12 @@ class BackendTestCase(unittest.TestCase):
         response = self.client.get('/search.html')
         self.assertEqual(response.status_code, 200)
 
-        # Test API search
         api_res = self.client.get('/api/search?q=Kyoto')
         self.assertEqual(api_res.status_code, 200)
         data = api_res.get_json()
         self.assertTrue(any(d['name'] == 'Kyoto' for d in data['destinations']))
 
-    def test_community_post(self):
+    def test_community_post_and_like(self):
         user = User(first_name='Sam', email='sam@example.com')
         user.set_password('pass')
         db.session.add(user)
@@ -116,6 +114,32 @@ class BackendTestCase(unittest.TestCase):
         response = self.client.post(f'/community/{post.id}/like', headers={'X-Requested-With': 'XMLHttpRequest'})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(post.likes_count, 1)
+
+    def test_trip_creation_and_duplication(self):
+        user = User(first_name='Maya', email='maya@test.com')
+        user.set_password('pass')
+        db.session.add(user)
+        db.session.commit()
+
+        res = self.client.post('/trips/create', data={
+            'trip_name': 'Himalayan Trek',
+            'start_date': '2026-10-01',
+            'end_date': '2026-10-10',
+            'start_place': 'Pokhara',
+            'description': 'Trek to Annapurna base camp',
+            'total_budget': '1500'
+        }, follow_redirects=True)
+        self.assertEqual(res.status_code, 200)
+
+        trip = Trip.query.filter_by(name='Himalayan Trek').first()
+        self.assertIsNotNone(trip)
+        self.assertEqual(trip.start_place, 'Pokhara')
+
+        # Test duplicate
+        dup_res = self.client.post(f'/trips/{trip.id}/duplicate', follow_redirects=True)
+        self.assertEqual(dup_res.status_code, 200)
+        dup_trip = Trip.query.filter_by(name='Copy of Himalayan Trek').first()
+        self.assertIsNotNone(dup_trip)
 
     def test_all_pages_render(self):
         pages = [
