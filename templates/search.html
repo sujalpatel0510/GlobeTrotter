@@ -1,14 +1,14 @@
 {% extends "base.html" %}
 
-{% block title %}Explore · City &amp; Activity Search · GlobeTrotter{% endblock %}
+{% block title %}Explore · Destinations &amp; Activities · GlobeTrotter{% endblock %}
 
 {% block content %}
 <main class="container">
 
   <div class="page-head">
-    <div class="eyebrow">City &amp; Activity Search</div>
-    <h1>Explore</h1>
-    <p>Search cities to add to a trip, or dig into activities once a city is picked.</p>
+    <div class="eyebrow">Destination &amp; Activity Explorer</div>
+    <h1>Explore the World</h1>
+    <p>Discover hand-picked activities and exciting cities to add directly to your itineraries.</p>
   </div>
 
   <form method="GET" action="{{ url_for('explore.search') }}" class="toolbar">
@@ -19,61 +19,100 @@
     <button type="submit" class="btn btn-ghost btn-sm">Search</button>
   </form>
 
-  <div data-tabs class="tabs">
-    <button class="tab {{ 'active' if active_tab == 'activities' else '' }}" data-tab="activities" onclick="document.getElementById('active-tab-input').value='activities';">Activities</button>
-    <button class="tab {{ 'active' if active_tab == 'cities' else '' }}" data-tab="cities" onclick="document.getElementById('active-tab-input').value='cities';">Cities</button>
+  <div class="flex gap-8 mb-24" style="flex-wrap:wrap;">
+    <a href="{{ url_for('explore.search', tab='activities') }}" class="tag {{ 'is-active' if not query and active_tab == 'activities' else '' }}">All Activities</a>
+    <a href="{{ url_for('explore.search', q='Culture', tab='activities') }}" class="tag {{ 'is-active' if query == 'Culture' else '' }}">Culture</a>
+    <a href="{{ url_for('explore.search', q='Food', tab='activities') }}" class="tag {{ 'is-active' if query == 'Food' else '' }}">Food &amp; Drink</a>
+    <a href="{{ url_for('explore.search', q='Adventure', tab='activities') }}" class="tag {{ 'is-active' if query == 'Adventure' else '' }}">Adventure</a>
+    <a href="{{ url_for('explore.search', tab='cities') }}" class="tag {{ 'is-active' if active_tab == 'cities' else '' }}">All Cities</a>
   </div>
 
-  <!-- Activities from PostgreSQL -->
+  <div data-tabs class="tabs">
+    <button class="tab {{ 'active' if active_tab == 'activities' else '' }}" data-tab="activities" onclick="document.getElementById('active-tab-input').value='activities';">
+      Activities ({{ activities|length }})
+    </button>
+    <button class="tab {{ 'active' if active_tab == 'cities' else '' }}" data-tab="cities" onclick="document.getElementById('active-tab-input').value='cities';">
+      Cities &amp; Destinations ({{ destinations|length }})
+    </button>
+  </div>
+
+  <!-- Activities Panel -->
   <div data-tab-panel="activities" style="{{ '' if active_tab == 'activities' else 'display:none;' }}">
-    <div class="grid" style="grid-template-columns:1fr;gap:14px;max-width:820px;margin-bottom:56px;">
+    <div class="grid" style="grid-template-columns:1fr;gap:16px;margin-bottom:56px;">
       {% for act in activities %}
-        <div class="card card-pad flex justify-between items-center" style="flex-wrap:wrap;gap:12px;">
-          <div>
-            <div class="stamp stamp-{{ act.stamp_color }}">{{ act.category }}</div>
-            <h3 class="mt-8" style="font-size:1.05rem;margin-bottom:4px;">{{ act.name }}</h3>
-            <p class="small mb-0">{{ act.duration or 'Flexible' }} &middot; {{ act.description or '' }} &middot; from <strong>{{ act.price|currency }}</strong></p>
+        <div class="card card-pad flex justify-between items-center" style="flex-wrap:wrap;gap:16px;">
+          <div style="flex:1;min-width:260px;">
+            <div class="flex items-center gap-8 mb-8">
+              <span class="stamp stamp-{{ act.stamp_color }}">{{ act.category }}</span>
+              {% if act.destination %}
+                <span class="stamp stamp-teal" style="font-size:0.65rem;">📍 {{ act.destination.name }}, {{ act.destination.country }}</span>
+              {% endif %}
+            </div>
+            <h3 style="font-size:1.1rem;margin-bottom:6px;">{{ act.name }}</h3>
+            <p class="small text-muted mb-0">
+              ⏱ <strong>{{ act.duration or 'Flexible' }}</strong> &middot; {{ act.description or '' }}
+            </p>
           </div>
-          {% if current_user.is_authenticated and user_trips %}
-            <button type="button" class="btn btn-outline btn-sm" onclick="showAddActivityModal({{ act.id }}, '{{ act.name|escape }}', {{ act.price }});">+ Add to trip</button>
-          {% elif current_user.is_authenticated %}
-            <a href="{{ url_for('trips.create_trip') }}" class="btn btn-outline btn-sm">+ Start a trip first</a>
-          {% else %}
-            <a href="{{ url_for('auth.login') }}" class="btn btn-outline btn-sm">+ Log in to add</a>
-          {% endif %}
+
+          <div class="flex items-center gap-16" style="flex-wrap:wrap;">
+            <div class="text-center" style="min-width:90px;">
+              <span class="small text-muted" style="display:block;font-size:0.7rem;text-transform:uppercase;">Price from</span>
+              <strong class="mono" style="font-size:1.3rem;color:var(--coral);">{{ act.price|currency }}</strong>
+            </div>
+
+            {% if current_user.is_authenticated and user_trips %}
+              <button type="button" class="btn btn-outline btn-sm" onclick="showAddActivityModal({{ act.id }}, '{{ act.name|escape }}', {{ act.price }});">+ Add to trip</button>
+            {% elif current_user.is_authenticated %}
+              <a href="{{ url_for('trips.create_trip') }}" class="btn btn-outline btn-sm">+ Start a trip</a>
+            {% else %}
+              <a href="{{ url_for('auth.login') }}" class="btn btn-outline btn-sm">+ Log in to add</a>
+            {% endif %}
+          </div>
         </div>
       {% else %}
-        <div class="card card-pad text-center">
-          <p class="text-muted mb-0">No activities found matching "{{ query }}".</p>
+        <div class="card card-pad text-center" style="padding:48px 24px;">
+          <p class="text-muted" style="font-size:1.05rem;">No activities found matching "{{ query }}".</p>
+          <a href="{{ url_for('explore.search', tab='activities') }}" class="btn btn-outline btn-sm mt-8">View all activities</a>
         </div>
       {% endfor %}
     </div>
   </div>
 
-  <!-- Cities from PostgreSQL -->
+  <!-- Cities Panel -->
   <div data-tab-panel="cities" style="{{ '' if active_tab == 'cities' else 'display:none;' }}">
     <div class="grid grid-3" style="margin-bottom:56px;">
       {% for dest in destinations %}
-        <div class="card">
-          <div class="dest-tile {{ dest.image_pattern }}" style="border-radius:16px 16px 0 0;height:120px;">
+        <div class="card" style="overflow:hidden;display:flex;flex-direction:column;">
+          <div class="dest-tile {{ dest.image_pattern }}" style="border-radius:16px 16px 0 0;height:140px;">
             <div>
               <div class="dest-label">{{ dest.name }}</div>
-              <div class="dest-sub">{{ dest.country|upper }} &middot; cost index: {{ dest.cost_index }} ({{ dest.cost_symbol }})</div>
+              <div class="dest-sub">{{ dest.country|upper }} &middot; {{ dest.trips_count }} trips planned</div>
             </div>
           </div>
-          <div class="card-pad" style="padding-top:14px;">
-            {% if current_user.is_authenticated and user_trips %}
-              <button type="button" class="btn btn-outline btn-sm w-full" onclick="showAddCityModal({{ dest.id }}, '{{ dest.name|escape }}');">+ Add to trip</button>
-            {% elif current_user.is_authenticated %}
-              <a href="{{ url_for('trips.create_trip') }}" class="btn btn-outline btn-sm w-full">+ Start a trip</a>
-            {% else %}
-              <a href="{{ url_for('auth.login') }}" class="btn btn-outline btn-sm w-full">+ Log in to add</a>
-            {% endif %}
+          <div class="card-pad" style="flex:1;display:flex;flex-direction:column;justify-content:space-between;padding-top:16px;">
+            <div>
+              <div class="flex justify-between items-center mb-8">
+                <span class="small text-muted">Cost index:</span>
+                <span class="stamp stamp-gold" style="font-size:0.68rem;">{{ dest.cost_symbol }} ({{ dest.cost_index }})</span>
+              </div>
+              <p class="small text-muted" style="min-height:38px;">{{ dest.description or 'A top destination for personalized travels and scenic explorations.' }}</p>
+            </div>
+
+            <div class="mt-16">
+              {% if current_user.is_authenticated and user_trips %}
+                <button type="button" class="btn btn-outline btn-sm w-full" onclick="showAddCityModal({{ dest.id }}, '{{ dest.name|escape }}');">+ Add to trip</button>
+              {% elif current_user.is_authenticated %}
+                <a href="{{ url_for('trips.create_trip') }}" class="btn btn-outline btn-sm w-full">+ Start a trip</a>
+              {% else %}
+                <a href="{{ url_for('auth.login') }}" class="btn btn-outline btn-sm w-full">+ Log in to add</a>
+              {% endif %}
+            </div>
           </div>
         </div>
       {% else %}
-        <div class="card card-pad text-center" style="grid-column:1/-1;">
-          <p class="text-muted mb-0">No cities found matching "{{ query }}".</p>
+        <div class="card card-pad text-center" style="grid-column:1/-1;padding:48px 24px;">
+          <p class="text-muted" style="font-size:1.05rem;">No cities found matching "{{ query }}".</p>
+          <a href="{{ url_for('explore.search', tab='cities') }}" class="btn btn-outline btn-sm mt-8">View all cities</a>
         </div>
       {% endfor %}
     </div>
