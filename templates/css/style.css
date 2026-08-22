@@ -84,6 +84,11 @@ body.app-bg{
   margin:0 auto;
   padding:0 32px;
 }
+main.container{
+  padding-top:32px;
+  padding-bottom:64px;
+  min-height:calc(100vh - 180px);
+}
 
 /* ---------------- Buttons ---------------- */
 .btn{
@@ -583,4 +588,5 @@ textarea.input{resize:vertical;min-height:110px;}
   .banner{padding:32px 20px;}
   .banner h1{font-size:1.8rem;}
   .container{padding:0 14px;}
+  main.container{padding-top:20px;padding-bottom:48px;}
 }
