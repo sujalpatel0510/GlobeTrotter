@@ -46,7 +46,15 @@ class User(UserMixin, db.Model):
             return self.first_name[0].upper()
         if self.username:
             return self.username[0].upper()
-        return 'U'
+        return 'T'
+
+    @property
+    def display_avatar(self):
+        if self.avatar_url:
+            if self.avatar_url.startswith('http') or self.avatar_url.startswith('/'):
+                return self.avatar_url
+            return f"/{self.avatar_url}"
+        return "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80"
 
     @property
     def trips_count(self):

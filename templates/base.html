@@ -39,7 +39,7 @@
       <div class="nav-actions">
         <a href="{{ url_for('trips.create_trip') }}" class="btn btn-primary btn-sm">+ Plan a trip</a>
         <a href="{{ url_for('profile.view_profile') }}" class="nav-avatar" title="{{ current_user.full_name }}">
-          {{ current_user.initial }}
+          <img src="{{ current_user.display_avatar }}" alt="{{ current_user.full_name }}" />
         </a>
         <a href="{{ url_for('auth.logout') }}" class="btn btn-ghost btn-sm" title="Log out">Log out</a>
       </div>

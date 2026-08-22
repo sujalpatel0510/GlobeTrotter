@@ -25,6 +25,7 @@ def seed_database():
         city='Ahmedabad',
         country='India',
         about='Slow traveler, street food enthusiast, and lover of mountain trails.',
+        avatar_url='https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
         is_admin=False
     )
     maya.set_password('password123')
@@ -38,6 +39,7 @@ def seed_database():
         city='São Paulo',
         country='Brazil',
         about='Photographer exploring historic towns and coastal islands.',
+        avatar_url='https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
         is_admin=False
     )
     diego.set_password('password123')
@@ -51,6 +53,7 @@ def seed_database():
         city='Mumbai',
         country='India',
         about='Passionate hiker and solo female traveler.',
+        avatar_url='https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150&auto=format&fit=crop&q=80',
         is_admin=False
     )
     priya.set_password('password123')
@@ -63,6 +66,7 @@ def seed_database():
         city='Madrid',
         country='Spain',
         about='Architecture lover and road trip veteran.',
+        avatar_url='https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80',
         is_admin=False
     )
     tomas.set_password('password123')
@@ -75,6 +79,7 @@ def seed_database():
         city='San Francisco',
         country='USA',
         about='Platform administrator account.',
+        avatar_url='https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&auto=format&fit=crop&q=80',
         is_admin=True
     )
     admin.set_password('admin123')
