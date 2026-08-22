@@ -11,31 +11,27 @@ def initialize_environment():
     with app.app_context():
         try:
             db.create_all()
-            # If database is completely empty, auto-seed demo data for immediate testing
             from app.models.user import User
             if not User.query.first():
                 seed_database()
+            print("[PostgreSQL] Connected and verified schema.")
         except Exception as e:
-            app.logger.warning(f"Database initialization notice: {e}")
+            print(f"[PostgreSQL Error] Database initialization failed: {e}")
+            raise e
 
 
 if __name__ == '__main__':
-    # Check CLI arguments
     if '--init-db' in sys.argv:
-        with app.app_context():
-            db.create_all()
-            print("Database initialized.")
-            if '--seed' in sys.argv or True:
-                seed_database()
-        if len(sys.argv) == 2 or (len(sys.argv) == 3 and '--seed' in sys.argv):
+        initialize_environment()
+        print("[PostgreSQL] Database initialized and seeded successfully.")
+        if len(sys.argv) <= 3:
             sys.exit(0)
 
-    # Initialize environment tables and seed if empty
     initialize_environment()
 
     port = int(os.environ.get('PORT', 5000))
     host = os.environ.get('HOST', '0.0.0.0')
+    print(f"Starting GlobeTrotter Flask application on http://localhost:{port}")
     app.run(host=host, port=port, debug=True)
 else:
-    # When running under Gunicorn
     initialize_environment()

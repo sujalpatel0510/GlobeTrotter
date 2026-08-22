@@ -9,6 +9,8 @@ explore_bp = Blueprint('explore', __name__)
 
 
 @explore_bp.route('/explore')
+@explore_bp.route('/explore/')
+@explore_bp.route('/search')
 @explore_bp.route('/search.html')
 def search():
     query = request.args.get('q', '').strip()
@@ -53,8 +55,10 @@ def add_activity():
     if not activity_id or not trip_id:
         return redirect(url_for('explore.search'))
         
-    activity = Activity.query.get_or_404(activity_id)
-    trip = Trip.query.get_or_404(trip_id)
+    activity = db.session.get(Activity, activity_id)
+    trip = db.session.get(Trip, trip_id)
+    if not activity or not trip:
+        return redirect(url_for('explore.search'))
     
     section = trip.sections.first()
     if not section:
@@ -103,8 +107,10 @@ def add_city():
     if not destination_id or not trip_id:
         return redirect(url_for('explore.search'))
         
-    dest = Destination.query.get_or_404(destination_id)
-    trip = Trip.query.get_or_404(trip_id)
+    dest = db.session.get(Destination, destination_id)
+    trip = db.session.get(Trip, trip_id)
+    if not dest or not trip:
+        return redirect(url_for('explore.search'))
     
     new_section = ItinerarySection(
         trip_id=trip.id,

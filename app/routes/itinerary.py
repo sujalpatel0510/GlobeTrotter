@@ -10,46 +10,49 @@ itinerary_bp = Blueprint('itinerary', __name__)
 @itinerary_bp.route('/trips/<int:trip_id>')
 @itinerary_bp.route('/itinerary-view.html')
 def itinerary_view(trip_id=None):
-    if trip_id is None:
-        trip = Trip.query.first()
-        if not trip:
-            return redirect(url_for('trips.create_trip'))
+    if trip_id is not None:
+        trip = db.session.get(Trip, trip_id)
     else:
-        trip = Trip.query.get_or_404(trip_id)
+        trip = Trip.query.first()
 
-    sections = trip.sections.all()
+    sections = trip.sections.all() if trip else []
     days_dict = {}
     
-    for section in sections:
-        for item in section.items:
-            day = item.day_number or 1
-            if day not in days_dict:
-                days_dict[day] = []
-            days_dict[day].append(item)
+    if trip:
+        for section in sections:
+            for item in section.items:
+                day = item.day_number or 1
+                if day not in days_dict:
+                    days_dict[day] = []
+                days_dict[day].append(item)
             
     sorted_days = sorted(days_dict.items(), key=lambda x: x[0])
+    breakdown = trip.budget_breakdown if trip else {
+        'transport': {'spent': 0.0, 'percentage': 0},
+        'stay': {'spent': 0.0, 'percentage': 0},
+        'activities': {'spent': 0.0, 'percentage': 0},
+        'meals': {'spent': 0.0, 'percentage': 0}
+    }
 
     return render_template(
         'itinerary-view.html',
         trip=trip,
         sections=sections,
         sorted_days=sorted_days,
-        breakdown=trip.budget_breakdown,
-        is_owner=(current_user.is_authenticated and trip.user_id == current_user.id)
+        breakdown=breakdown,
+        is_owner=(current_user.is_authenticated and trip and trip.user_id == current_user.id)
     )
 
 
 @itinerary_bp.route('/trips/<int:trip_id>/builder', methods=['GET', 'POST'])
 @itinerary_bp.route('/itinerary-builder.html', methods=['GET', 'POST'])
 def itinerary_builder(trip_id=None):
-    if trip_id is None:
-        trip = Trip.query.filter_by(status='draft').first() or Trip.query.first()
-        if not trip:
-            return redirect(url_for('trips.create_trip'))
+    if trip_id is not None:
+        trip = db.session.get(Trip, trip_id)
     else:
-        trip = Trip.query.get_or_404(trip_id)
+        trip = Trip.query.filter_by(status='draft').first() or Trip.query.first()
 
-    if request.method == 'POST':
+    if request.method == 'POST' and trip:
         section_titles = request.form.getlist('section_title[]') or request.form.getlist('section_title')
         section_descriptions = request.form.getlist('section_description[]')
         section_dates = request.form.getlist('section_date_range[]')
@@ -82,7 +85,7 @@ def itinerary_builder(trip_id=None):
             db.session.commit()
             return redirect(url_for('itinerary.itinerary_view', trip_id=trip.id))
 
-    sections = trip.sections.all()
+    sections = trip.sections.all() if trip else []
     return render_template(
         'itinerary-builder.html',
         trip=trip,
@@ -94,27 +97,32 @@ def itinerary_builder(trip_id=None):
 @itinerary_bp.route('/shared-itinerary.html')
 def shared_itinerary(share_token=None):
     if share_token:
-        trip = Trip.query.filter_by(share_token=share_token).first_or_404()
+        trip = Trip.query.filter_by(share_token=share_token).first()
     else:
         trip = Trip.query.filter_by(is_public=True).first() or Trip.query.first()
-        if not trip:
-            return redirect(url_for('main.dashboard'))
     
-    sections = trip.sections.all()
+    sections = trip.sections.all() if trip else []
     days_dict = {}
-    for section in sections:
-        for item in section.items:
-            day = item.day_number or 1
-            if day not in days_dict:
-                days_dict[day] = []
-            days_dict[day].append(item)
+    if trip:
+        for section in sections:
+            for item in section.items:
+                day = item.day_number or 1
+                if day not in days_dict:
+                    days_dict[day] = []
+                days_dict[day].append(item)
             
     sorted_days = sorted(days_dict.items(), key=lambda x: x[0])
+    breakdown = trip.budget_breakdown if trip else {
+        'transport': {'spent': 0.0, 'percentage': 0},
+        'stay': {'spent': 0.0, 'percentage': 0},
+        'activities': {'spent': 0.0, 'percentage': 0},
+        'meals': {'spent': 0.0, 'percentage': 0}
+    }
 
     return render_template(
         'shared-itinerary.html',
         trip=trip,
         sections=sections,
         sorted_days=sorted_days,
-        breakdown=trip.budget_breakdown
+        breakdown=breakdown
     )

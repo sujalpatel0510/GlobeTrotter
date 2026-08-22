@@ -7,32 +7,28 @@ load_dotenv(BASE_DIR / '.env')
 
 
 class Config:
-    """Base application configuration."""
+    """Base application configuration strictly backed by PostgreSQL."""
     SECRET_KEY = os.environ.get('SECRET_KEY', 'globetrotter-super-secret-key-change-in-production')
     
-    # Database Configuration
-    DATABASE_URL = os.environ.get('DATABASE_URL')
-    
-    # Default to PostgreSQL if specified, or gracefully fall back to SQLite for instant local runs
-    if DATABASE_URL:
-        if DATABASE_URL.startswith("postgres://"):
-            DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
-        SQLALCHEMY_DATABASE_URI = DATABASE_URL
-    else:
-        instance_dir = BASE_DIR / 'instance'
-        instance_dir.mkdir(exist_ok=True)
-        SQLALCHEMY_DATABASE_URI = f"sqlite:///{instance_dir / 'globetrotter.sqlite3'}"
+    # PostgreSQL Database URL
+    DATABASE_URL = os.environ.get(
+        'DATABASE_URL',
+        'postgresql://globetrotter:globetrotter_password@localhost:5432/globetrotter_db'
+    )
+    if DATABASE_URL.startswith("postgres://"):
+        DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
         
+    SQLALCHEMY_DATABASE_URI = DATABASE_URL
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ENGINE_OPTIONS = {
         'pool_pre_ping': True,
+        'pool_size': 10,
+        'max_overflow': 20
     }
     
-    # Template and Static Directories
     TEMPLATES_DIR = BASE_DIR / 'templates'
     STATIC_DIR = BASE_DIR / 'templates'
     
-    # Uploads Configuration
     UPLOAD_FOLDER = BASE_DIR / 'uploads'
     MAX_CONTENT_LENGTH = int(os.environ.get('MAX_CONTENT_LENGTH', 16 * 1024 * 1024))
     ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
@@ -51,7 +47,12 @@ class ProductionConfig(Config):
 class TestingConfig(Config):
     TESTING = True
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
+    # Testing also connects to PostgreSQL test/main DB
+    DATABASE_URL = os.environ.get(
+        'TEST_DATABASE_URL',
+        'postgresql://globetrotter:globetrotter_password@localhost:5432/globetrotter_db'
+    )
+    SQLALCHEMY_DATABASE_URI = DATABASE_URL
     WTF_CSRF_ENABLED = False
 
 

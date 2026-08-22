@@ -87,9 +87,14 @@ class BackendTestCase(unittest.TestCase):
         db.session.add(act)
         db.session.commit()
 
-        response = self.client.get('/explore/?q=Kyoto')
+        response = self.client.get('/search.html')
         self.assertEqual(response.status_code, 200)
-        self.assertIn(b'Kyoto', response.data)
+
+        # Test API search
+        api_res = self.client.get('/api/search?q=Kyoto')
+        self.assertEqual(api_res.status_code, 200)
+        data = api_res.get_json()
+        self.assertTrue(any(d['name'] == 'Kyoto' for d in data['destinations']))
 
     def test_community_post(self):
         user = User(first_name='Sam', email='sam@example.com')
@@ -108,10 +113,31 @@ class BackendTestCase(unittest.TestCase):
         self.assertIn('Coffee', post.tags_list)
         self.assertEqual(post.likes_count, 0)
 
-        # Test like
         response = self.client.post(f'/community/{post.id}/like', headers={'X-Requested-With': 'XMLHttpRequest'})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(post.likes_count, 1)
+
+    def test_all_pages_render(self):
+        pages = [
+            '/',
+            '/index.html',
+            '/register.html',
+            '/dashboard.html',
+            '/my-trips.html',
+            '/create-trip.html',
+            '/itinerary-builder.html',
+            '/itinerary-view.html',
+            '/search.html',
+            '/community.html',
+            '/calendar.html',
+            '/profile.html',
+            '/admin.html',
+            '/shared-itinerary.html',
+            '/base.html'
+        ]
+        for page in pages:
+            res = self.client.get(page)
+            self.assertEqual(res.status_code, 200, f"Page {page} failed with status {res.status_code}")
 
     def test_health_check(self):
         response = self.client.get('/health')
